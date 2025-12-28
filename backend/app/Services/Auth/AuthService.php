@@ -53,4 +53,12 @@ class AuthService
         }
         return $admin;
     }
+
+    public function login($data){
+        $user = User::where('email', $data['email'])->first();
+        if(!$user || !Hash::check($data['password'], $user->password)){
+            return null;
+        }
+        return $user;
+    }
 }

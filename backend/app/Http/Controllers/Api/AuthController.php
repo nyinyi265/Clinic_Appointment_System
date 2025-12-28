@@ -48,46 +48,51 @@ class AuthController extends Controller
         }
     }
 
-    public function patientLogin(LoginRequest $request)
+    // public function patientLogin(LoginRequest $request)
+    // {
+    //     $credentials = $request->only(['email', 'password']);
+
+    //     if (!Auth::attempt($credentials)) {
+    //         return response()->json(['message' => 'Invalid credentials'], 401);
+    //     }
+
+    //     $credentials = $request->validated();
+    //     $loginPatient = $this->authService->patientLogin($credentials);
+
+    //     if (!$loginPatient) {
+    //         return $this->fail('fail', null, 'Patient login fail', 404);
+    //     }
+
+    //     $token = $loginPatient->createToken('auth_token')->plainTextToken;
+    //     return $this->success('success', [
+    //         'data' => RegisterResource::make($loginPatient),
+    //         'token' => $token,
+    //         'role' => $loginPatient->getRoleNames(),
+    //     ], 'Patient login successfully', 200);
+    // }
+
+    public function login(LoginRequest $request)
     {
-        $credentials = $request->only(['email', 'password']);
+        $validated = $request->validated();
+        $user = $this->authService->login($validated);
 
-        if (!Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
-        }
-
-        $credentials = $request->validated();
-        $loginPatient = $this->authService->patientLogin($credentials);
-
-        if (!$loginPatient) {
-            return $this->fail('fail', null, 'Patient login fail', 404);
-        }
-
-        $token = $loginPatient->createToken('auth_token')->plainTextToken;
-        return $this->success('success', [
-            'data' => RegisterResource::make($loginPatient),
-            'token' => $token,
-            'role' => $loginPatient->getRoleNames(),
-        ], 'Patient login successfully', 200);
-    }
-
-    public function adminLogin(LoginRequest $request)
-    {
-        $admin = $this->authService->adminLogin($request->validated());
-
-        if (!$admin) {
+        if (!$user) {
             return response()->json(['message' => 'Invalid admin credentials'], 401);
         }
 
-        // Optional: revoke old tokens
-        $admin->tokens()->delete();
+        $token = $user->createToken('auth_token')->plainTextToken;
 
-        $token = $admin->createToken('admin_token')->plainTextToken;
+        $role = $user->getRoleNames()->first();
+
+        if ($role === 'patient') {
+            $user->load('patient_profile');
+        } elseif ($role === 'doctor') {
+            $user->load('doctor_profile');
+        }
 
         return $this->success('success', [
-            'data' => LoginResource::make($admin),
+            'data' => LoginResource::make($user),
             'token' => $token,
-            'role' => $admin->role,
-        ], 'Admin login successfully', 200);
+        ], ucfirst($role) . ' login successfully', 200);
     }
 }

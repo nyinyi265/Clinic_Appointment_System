@@ -6,24 +6,24 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->group(function () {
     Route::prefix('patient')->group(function () {
         Route::post('/register', [\App\Http\Controllers\Api\AuthController::class, 'patientRegister']);
-        Route::post('/login', [\App\Http\Controllers\Api\AuthController::class, 'patientLogin']);
+        // Route::post('/login', [\App\Http\Controllers\Api\AuthController::class, 'patientLogin']);
     });
 
     Route::prefix('doctor')->group(function () {
         Route::post('/register', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'registerDoctor']);
-        Route::post('/login', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'loginDoctor']);
+        // Route::post('/login', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'loginDoctor']);
     });
 
-    Route::post('/admin/login', [\App\Http\Controllers\Api\AuthController::class, 'adminLogin']);
+    Route::post('/login', [\App\Http\Controllers\Api\AuthController::class, 'login']);
 
-    Route::get('/login', function () {
-        return response()->json([
-            'status' => 'fail',
-            'statusCode' => 401,
-            'data' => null,
-            'message' => 'Unauthenticated. Please login first.',
-        ], 401);
-    })->name('login');
+    // Route::get('/login', function () {
+    //     return response()->json([
+    //         'status' => 'fail',
+    //         'statusCode' => 401,
+    //         'data' => null,
+    //         'message' => 'Unauthenticated. Please login first.',
+    //     ], 401);
+    // })->name('login');
 });
 
 Route::prefix('v1')->group(function () {

@@ -76,28 +76,28 @@ class DoctorProfileController extends Controller
         }
     }
 
-    public function loginDoctor(LoginRequest $request)
-    {
-        $credentials = $request->only(['email', 'password']);
+    // public function loginDoctor(LoginRequest $request)
+    // {
+    //     $credentials = $request->only(['email', 'password']);
 
-        if (!Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Invalid Credentials'], 401);
-        }
+    //     if (!Auth::attempt($credentials)) {
+    //         return response()->json(['message' => 'Invalid Credentials'], 401);
+    //     }
 
-        $credentials = $request->validated();
-        $doctor = $this->doctorProfileService->doctorLogin($credentials);
+    //     $credentials = $request->validated();
+    //     $doctor = $this->doctorProfileService->doctorLogin($credentials);
 
-        if (!$doctor) {
-            return $this->fail('fail', null, 'Doctor login failed', 404);
-        }
+    //     if (!$doctor) {
+    //         return $this->fail('fail', null, 'Doctor login failed', 404);
+    //     }
 
-        $token = $doctor->createToken('auth_token')->plainTextToken;
-        return $this->success('success', [
-            'data' => DoctorProfileResource::make($doctor),
-            'token' => $token,
-            'role' => $doctor->getRoleNames(),
-        ], 'Doctor login successfully', 200);
-    }
+    //     $token = $doctor->createToken('auth_token')->plainTextToken;
+    //     return $this->success('success', [
+    //         'data' => DoctorProfileResource::make($doctor),
+    //         'token' => $token,
+    //         'role' => $doctor->getRoleNames(),
+    //     ], 'Doctor login successfully', 200);
+    // }
 
     public function deleteDoctor($id)
     {
