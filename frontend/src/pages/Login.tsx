@@ -3,8 +3,10 @@ import { Mail, Lock, Eye, EyeOff, Stethoscope } from "lucide-react";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import { login } from "../../services/authSvc";
+import { useNavigate } from "react-router-dom";
 
 const Login: React.FC = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -31,10 +33,18 @@ const Login: React.FC = () => {
 
       console.log("Login success:", data);
 
+      const userRole = data.data?.data?.role;
+
+      if (userRole?.includes("admin")) {
+        localStorage.setItem('token', data.data?.token);
+        localStorage.setItem('role', 'admin');
+        localStorage.setItem('user', JSON.stringify(data.data?.data));
+        navigate('/admin');
+      }
       // Example:
       // localStorage.setItem('token', data.token);
       // navigate('/dashboard');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Login failed:", error);
       setErrors({
