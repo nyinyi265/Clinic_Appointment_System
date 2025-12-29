@@ -1,26 +1,43 @@
-import React, { useState } from 'react';
-import { Mail, Lock, Eye, EyeOff, Stethoscope } from 'lucide-react';
-import Button from '../components/Button';
-import Input from '../components/Input';
+import React, { useState } from "react";
+import { Mail, Lock, Eye, EyeOff, Stethoscope } from "lucide-react";
+import Button from "../components/Button";
+import Input from "../components/Input";
+import { login } from "../../services/authSvc";
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {}
+  );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: { email?: string; password?: string } = {};
 
-    if (!email) newErrors.email = 'Email is required';
-    if (!password) newErrors.password = 'Password is required';
+    if (!email) newErrors.email = "Email is required";
+    if (!password) newErrors.password = "Password is required";
 
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
       // Handle login logic here
-      console.log('Login attempt:', { email, password });
+      console.log("Login attempt:", { email, password });
+    }
+
+    try {
+      const data = await login({ email, password });
+
+      console.log("Login success:", data);
+
+      // Example:
+      // localStorage.setItem('token', data.token);
+      // navigate('/dashboard');
+    } catch (error: any) {
+      setErrors({
+        email: "Invalid email or password",
+      });
     }
   };
 
@@ -33,8 +50,12 @@ const Login: React.FC = () => {
             <Stethoscope className="mx-auto h-16 w-16 lg:h-24 lg:w-24 text-white" />
           </div>
           <h1 className="text-2xl lg:text-4xl font-bold mb-4">Care Point</h1>
-          <p className="text-lg lg:text-xl opacity-90">Your health, our priority</p>
-          <p className="mt-4 text-sm lg:text-lg opacity-75">Book appointments, track your health, and get the care you need</p>
+          <p className="text-lg lg:text-xl opacity-90">
+            Your health, our priority
+          </p>
+          <p className="mt-4 text-sm lg:text-lg opacity-75">
+            Book appointments, track your health, and get the care you need
+          </p>
         </div>
       </div>
 
@@ -43,7 +64,9 @@ const Login: React.FC = () => {
         <div className="w-full max-w-md space-y-8">
           <div className="text-center lg:text-left">
             <h2 className="text-3xl font-bold text-gray-900">Welcome back</h2>
-            <p className="mt-2 text-sm text-gray-600">Please sign in to your account</p>
+            <p className="mt-2 text-sm text-gray-600">
+              Please sign in to your account
+            </p>
           </div>
 
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -60,7 +83,7 @@ const Login: React.FC = () => {
               />
               <Input
                 label="Password"
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
@@ -80,20 +103,31 @@ const Login: React.FC = () => {
                   type="checkbox"
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+                <label
+                  htmlFor="remember-me"
+                  className="ml-2 block text-sm text-gray-900"
+                >
                   Remember me
                 </label>
               </div>
 
               <div className="text-sm">
-                <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
+                <a
+                  href="#"
+                  className="font-medium text-blue-600 hover:text-blue-500"
+                >
                   Forgot your password?
                 </a>
               </div>
             </div>
 
             <div>
-              <Button type="submit" variant="primary" size="lg" className="w-full">
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                className="w-full"
+              >
                 Sign in
               </Button>
             </div>
@@ -101,8 +135,11 @@ const Login: React.FC = () => {
 
           <div className="text-center">
             <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
-              <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
+              Don't have an account?{" "}
+              <a
+                href="#"
+                className="font-medium text-blue-600 hover:text-blue-500"
+              >
                 Contact administrator
               </a>
             </p>
