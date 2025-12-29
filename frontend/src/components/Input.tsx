@@ -48,7 +48,7 @@ const Input: React.FC<InputProps> = ({
             className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
             onClick={onRightClick}
           >
-            <RightIcon className="h-4 w-4 lg:h-5 lg:w-5" />
+            <RightIcon className="h-4 w-4 lg:h-5 lg:w-5 cursor-pointer" />
           </button>
         )}
       </div>

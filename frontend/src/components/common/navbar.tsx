@@ -1,5 +1,5 @@
 import React from "react";
-import { navLinks, type NavItem } from "../../config/navLinks";
+import { navLinks } from "../../config/navLinks";
 import { Stethoscope } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 // import { userUser } from "../hooks/useUser"; // get role after login
@@ -32,10 +32,10 @@ const Navbar: React.FC<NavbarProps> = ({ role }) => {
         ))}
       </ul>
       <div className="flex items-center">
-        <button className="text-gray-700 hover:text-white mr-4 border-2 border-blue-600 rounded-lg px-4 py-2 hover:bg-blue-600" onClick={() => navigate("/login")}>
+        <button className="text-gray-700 hover:text-white mr-4 border-2 border-blue-600 rounded-lg px-4 py-2 hover:bg-blue-600 cursor-pointer" onClick={() => navigate("/login")}>
           Login
         </button>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 cursor-pointer">
           Sign Up
         </button>
       </div>

@@ -34,7 +34,9 @@ const Login: React.FC = () => {
       // Example:
       // localStorage.setItem('token', data.token);
       // navigate('/dashboard');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
+      console.error("Login failed:", error);
       setErrors({
         email: "Invalid email or password",
       });
@@ -126,7 +128,7 @@ const Login: React.FC = () => {
                 type="submit"
                 variant="primary"
                 size="lg"
-                className="w-full"
+                className="w-full cursor-pointer"
               >
                 Sign in
               </Button>
