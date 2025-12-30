@@ -35,22 +35,24 @@ const Login: React.FC = () => {
 
       const userRole = data.data?.data?.role;
 
+      localStorage.setItem("token", data.data?.token);
+      localStorage.setItem("role", "admin");
+      localStorage.setItem("user", JSON.stringify(data.data?.data));
+
       if (userRole?.includes("admin")) {
-        localStorage.setItem('token', data.data?.token);
-        localStorage.setItem('role', 'admin');
-        localStorage.setItem('user', JSON.stringify(data.data?.data));
-        navigate('/admin');
+        navigate("/admin");
+      }else if(userRole?.includes("doctor")){
+        navigate("/doctor")
+      }else if(userRole?.includes("patient")){
+        navigate("/patient")
       }
-      // Example:
-      // localStorage.setItem('token', data.token);
-      // navigate('/dashboard');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Login failed:", error);
       setErrors({
         email: "Invalid email or password",
       });
-    }
+    } 
   };
 
   return (

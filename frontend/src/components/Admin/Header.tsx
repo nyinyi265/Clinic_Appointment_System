@@ -9,9 +9,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-// import { Separator } from "@/components/ui/separator"
-import { Bell, User } from "lucide-react" // Search
-// import { Input } from "@/components/ui/input"
+import { User } from "lucide-react" 
 import { Button } from "@/components/ui/button"
 
 export function AdminHeader() {
@@ -31,16 +29,8 @@ export function AdminHeader() {
         </BreadcrumbList>
       </Breadcrumb>
       <div className="ml-auto mr-5 flex items-center gap-4">
-        {/* <div className="relative hidden lg:block w-64">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input type="search" placeholder="Search..." className="pl-8 bg-muted/50" />
-        </div> */}
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-blue-600" />
-        </Button>
         <Button variant="ghost" size="icon">
-          <User className="h-5 w-5" />
+          <User className="h-8 w-8" />
         </Button>
       </div>
     </header>

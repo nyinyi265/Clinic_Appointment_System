@@ -6,6 +6,7 @@ import {
   Stethoscope,
   LogOut,
   Building2,
+  Heart,
 } from "lucide-react";
 import {
   Sidebar,
@@ -19,7 +20,7 @@ import {
   SidebarGroupLabel,
   SidebarGroupContent,
 } from "@/components/ui/sidebar";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
 const items = [
   {
@@ -38,6 +39,11 @@ const items = [
     icon: Stethoscope,
   },
   {
+    title: "Specialities",
+    url: "/admin/specialities",
+    icon: Heart,
+  },
+  {
     title: "Appointments",
     url: "/admin/appointments",
     icon: Calendar,
@@ -50,7 +56,15 @@ const items = [
 ];
 
 export function AdminSidebar() {
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('user');
+    navigate('/');
+  };
+
   const pathname = useLocation().pathname;
+  const navigate = useNavigate();
 
   return (
     <Sidebar collapsible="icon" className="w-[16rem]">
@@ -59,9 +73,7 @@ export function AdminSidebar() {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
             <Stethoscope className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="text-xl font-bold text-blue-600">
-            Care Point
-          </span>
+          <span className="text-xl font-bold text-blue-600">Care Point</span>
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -90,9 +102,11 @@ export function AdminSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Logout">
-              <LogOut />
-              <span>Logout</span>
+            <SidebarMenuButton tooltip="Logout" className="cursor-pointer">
+              <LogOut className="cursor-pointer" />
+              <button className="cursor-pointer" onClick={logout}>
+                Logout
+              </button>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

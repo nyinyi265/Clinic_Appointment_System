@@ -1,34 +1,35 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
 import { useEffect, useState } from "react";
 import { getAllPatients, deletePatientById } from "../../../services/apiSvc";
-import { Trash } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 export default function Patient() {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchPatients = async () => {
-      try {
-        const data = await getAllPatients();
-        if (data.length !== 0) {
-          console.log(data);
-          setPatients(data.data.data);
-        }
-      } catch (err: any) {
-        setError(err.message || "Failed to fetch patients");
-      } finally {
-        setLoading(false);
+  const fetchPatients = async () => {
+    try {
+      const data = await getAllPatients();
+      if (data.length !== 0) {
+        console.log(data);
+        setPatients(data.data.data);
       }
-    };
+    } catch (err: any) {
+      setError(err.message || "Failed to fetch patients");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  useEffect(() => {
     fetchPatients();
   }, []);
 
   const deletePatient = async (id: number) => {
     try {
       await deletePatientById(id);
+      fetchPatients();
     } catch (err: any) {
       setError(err.message || "Failed to delete patient");
     }
@@ -76,7 +77,7 @@ export default function Patient() {
                       className="flex items-center justify-center bg-red-600 p-2 rounded-md text-white cursor-pointer hover:bg-red-700"
                       onClick={() => deletePatient(patient.id)}
                     >
-                      <Trash className="inline-block w-4 h-4" />
+                      <Trash2 className="inline-block w-4 h-4" />
                     </button>
                   </td>
                 </tr>
