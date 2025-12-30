@@ -23,6 +23,7 @@ class DoctorProfileResource extends JsonResource
             'password' => $this->password,
             'license_number' => $this->doctor_profile->license_number,
             'is_active' => $this->doctor_profile->is_active,
+            'specialities' => $this->doctor_profile->specialities->pluck('name'),
             'role' => $this->getRoleNames(),
         ];
     }

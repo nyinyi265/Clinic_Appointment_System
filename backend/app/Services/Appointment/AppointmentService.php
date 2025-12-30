@@ -8,12 +8,12 @@ class AppointmentService
 {
     public function getAllAppointments()
     {
-        return Appointment::with(['patientProfile', 'doctorProfile', 'clinic'])->get();
+        return Appointment::with(['patientProfile.user', 'doctorProfile.user', 'clinic'])->get();
     }
 
     public function getAppointmentById($id)
     {
-        return Appointment::with(['patientProfile', 'doctorProfile', 'clinic'])->find($id);
+        return Appointment::with(['patientProfile.user', 'doctorProfile.user', 'clinic'])->find($id);
     }
 
     public function createAppointment($data)

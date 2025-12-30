@@ -24,9 +24,38 @@ class AppointmentResource extends JsonResource
             'end_time' => $this->end_time,
             'status' => $this->status,
             'notes' => $this->notes,
-            'patient_profile' => $this->whenLoaded('patientProfile'),
-            'doctor_profile' => $this->whenLoaded('doctorProfile'),
-            'clinic' => $this->whenLoaded('clinic'),
+            'patient' => $this->whenLoaded('patientProfile', function () {
+                return [
+                    'id' => $this->patientProfile->id,
+                    'user' => $this->patientProfile->user ? [
+                        'id' => $this->patientProfile->user->id,
+                        'first_name' => $this->patientProfile->user->first_name,
+                        'last_name' => $this->patientProfile->user->last_name,
+                        'email' => $this->patientProfile->user->email,
+                        'phone_number' => $this->patientProfile->user->phone_number,
+                    ] : null,
+                ];
+            }),
+            'doctor' => $this->whenLoaded('doctorProfile', function () {
+                return [
+                    'id' => $this->doctorProfile->id,
+                    'user' => $this->doctorProfile->user ? [
+                        'id' => $this->doctorProfile->user->id,
+                        'first_name' => $this->doctorProfile->user->first_name,
+                        'last_name' => $this->doctorProfile->user->last_name,
+                        'email' => $this->doctorProfile->user->email,
+                        'phone_number' => $this->doctorProfile->user->phone_number,
+                    ] : null,
+                ];
+            }),
+            'clinic' => $this->whenLoaded('clinic', function () {
+                return [
+                    'id' => $this->clinic->id,
+                    'name' => $this->clinic->name,
+                    'address' => $this->clinic->address,
+                    'phone_number' => $this->clinic->phone_number,
+                ];
+            }),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

@@ -12,7 +12,7 @@ class DoctorProfileService
     //
     public function getAllDoctors()
     {
-        $doctors = User::role('doctor')->with('doctor_profile')->get();
+        $doctors = User::role('doctor')->with(['doctor_profile.specialities'])->get();
         return $doctors;
     }
 

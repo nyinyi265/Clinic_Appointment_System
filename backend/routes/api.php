@@ -70,13 +70,18 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
         Route::get('/all-patients', [\App\Http\Controllers\PatientProfile\PatientProfileController::class, 'getAllPatients']);
+        Route::get('/patient/{patient_id}', [\App\Http\Controllers\PatientProfile\PatientProfileController::class, 'getPatientById']);
         Route::delete('/patient/{patient_id}', [\App\Http\Controllers\PatientProfile\PatientProfileController::class, 'deletePatient']);
 
+        Route::get('/all-clinics', [\App\Http\Controllers\Clinic\ClinicController::class, 'getAllClinics']);
+        Route::get('/clinic/{clinic_id}', [\App\Http\Controllers\Clinic\ClinicController::class, 'getClinicById']);
         Route::post('/clinic', [\App\Http\Controllers\Clinic\ClinicController::class, 'createClinic']);
         Route::put('/clinic/{clinic_id}', [\App\Http\Controllers\Clinic\ClinicController::class, 'updateClinic']);
         Route::delete('/clinic/{clinic_id}', [\App\Http\Controllers\Clinic\ClinicController::class, 'deleteClinic']);
 
+        Route::get('/all-doctors', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'getAllDoctors']);
         Route::delete('/doctor/{doctor_id}', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'deleteDoctor']);
+
 
         Route::post('/doctor-clinic', [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'createDoctorClinic']);
         Route::put('/doctor-clinic/{id}', [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'updateDoctorClinic']);
