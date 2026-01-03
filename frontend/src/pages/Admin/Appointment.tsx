@@ -6,6 +6,7 @@ import { Trash2 } from "lucide-react";
 export default function Appointment() {
   const [appointments, setAppointment] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const fetchAppointments = async () => {
@@ -26,12 +27,15 @@ export default function Appointment() {
     fetchAppointments();
   }, []);
 
-  const deleteAppointment = (id: number) => {
+  const deleteAppointment = async (id: number) => {
     try{
-      deleteAppointmentById(id);
+      setDeleting(id);
+      await deleteAppointmentById(id);
       fetchAppointments();
     }catch(err: any){
       setError(err.message || "Fail to delete appointment");
+    } finally {
+      setDeleting(null);
     }
   }
 
@@ -80,8 +84,9 @@ export default function Appointment() {
                   <td className="border p-2">{appointment.status}</td>
                   <td className="border p-2 flex justify-center">
                     <button
-                      className="flex items-center justify-center bg-red-600 p-2 rounded-md text-white cursor-pointer hover:bg-red-700"
+                      className="flex items-center justify-center bg-red-600 p-2 rounded-md text-white cursor-pointer hover:bg-red-700 disabled:opacity-50"
                       onClick={() => deleteAppointment(appointment.id)}
+                      disabled={deleting === appointment.id}
                     >
                       <Trash2 className="inline-block w-4 h-4" />
                     </button>

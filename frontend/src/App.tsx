@@ -10,6 +10,18 @@ import Clinic from "./pages/Admin/Clinic";
 import ClinicForm from "./pages/Admin/ClinicForm";
 import Speciality from "./pages/Admin/Speciality";
 import SpecialityForm from "./pages/Admin/SpecialityForm";
+import PatientClinic from "./pages/Patient/Clinic";
+import PatientDoctor from "./pages/Patient/Doctor";
+import PatientAppointment from "./pages/Patient/Appointment";
+import ClinicDetail from "./pages/Patient/ClinicDetail";
+import DoctorDetail from "./pages/Patient/DoctorDetail";
+import PatientProfile from "./pages/Patient/Profile";
+import Aboutus from "./pages/Patient/Aboutus";
+import Contactus from "./pages/Patient/Contactus";
+import DoctorDashboard from "./pages/Doctor/Dashboard";
+import DoctorAppointments from "./pages/Doctor/Appointments";
+import DoctorPatients from "./pages/Doctor/Patients";
+import DoctorClinics from "./pages/Doctor/Clinics";
 
 function App() {
   return (
@@ -56,6 +68,18 @@ function App() {
         path="/admin/speciality/edit/:id"
         element={<AdminLayout children={<SpecialityForm />} />}
       />
+      <Route path="/clinic" element={<PatientClinic />} />
+      <Route path="/clinic/:id" element={<ClinicDetail />} />
+      <Route path="/doctor" element={<PatientDoctor />} />
+      <Route path="/doctor/:id" element={<DoctorDetail />} />
+      <Route path="/patient/profile" element={<PatientProfile />} />
+      <Route path="/appointment" element={<PatientAppointment />} />
+      <Route path="/aboutus" element={<Aboutus />} />
+      <Route path="/contactus" element={<Contactus />} />
+      <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+      <Route path="/doctor/appointments" element={<DoctorAppointments />} />
+      <Route path="/doctor/patients" element={<DoctorPatients />} />
+      <Route path="/doctor/clinics" element={<DoctorClinics />} />
     </Routes>
   );
 }

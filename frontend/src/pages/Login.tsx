@@ -33,18 +33,18 @@ const Login: React.FC = () => {
 
       console.log("Login success:", data);
 
-      const userRole = data.data?.data?.role;
+      const userRole = data.data?.role;
 
       localStorage.setItem("token", data.data?.token);
-      localStorage.setItem("role", "admin");
-      localStorage.setItem("user", JSON.stringify(data.data?.data));
+      localStorage.setItem("role", userRole);
+      localStorage.setItem("user", JSON.stringify(data.data));
 
       if (userRole?.includes("admin")) {
         navigate("/admin");
       }else if(userRole?.includes("doctor")){
-        navigate("/doctor")
+        navigate("/doctor/dashboard")
       }else if(userRole?.includes("patient")){
-        navigate("/patient")
+        navigate("/")
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -165,3 +165,4 @@ const Login: React.FC = () => {
 };
 
 export default Login;
+
