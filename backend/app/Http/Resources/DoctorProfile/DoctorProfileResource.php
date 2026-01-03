@@ -21,9 +21,27 @@ class DoctorProfileResource extends JsonResource
             'phone_number' => $this->phone_number,
             'email' => $this->email,
             'password' => $this->password,
-            'license_number' => $this->doctor_profile->license_number,
-            'is_active' => $this->doctor_profile->is_active,
-            'specialities' => $this->doctor_profile->specialities->pluck('name'),
+            'profile' => [
+                'id' => $this->doctor_profile->id,
+                'license_number' => $this->doctor_profile->license_number,
+                'is_active' => $this->doctor_profile->is_active,
+                'profile_picture' => $this->doctor_profile->profile_picture,
+            ],
+            'specialities' => $this->doctor_profile->specialities->map(function ($speciality) {
+                return [
+                    'id' => $speciality->id,
+                    'name' => $speciality->name,
+                ];
+            }),
+            'clinics' => $this->doctor_profile->clinics->map(function ($clinic) {
+                return [
+                    'id' => $clinic->id,
+                    'name' => $clinic->name,
+                    'pivot' => [
+                        'is_active' => $clinic->pivot->is_active,
+                    ],
+                ];
+            }),
             'role' => $this->getRoleNames(),
         ];
     }

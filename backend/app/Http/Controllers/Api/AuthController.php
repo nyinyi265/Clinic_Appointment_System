@@ -48,29 +48,6 @@ class AuthController extends Controller
         }
     }
 
-    // public function patientLogin(LoginRequest $request)
-    // {
-    //     $credentials = $request->only(['email', 'password']);
-
-    //     if (!Auth::attempt($credentials)) {
-    //         return response()->json(['message' => 'Invalid credentials'], 401);
-    //     }
-
-    //     $credentials = $request->validated();
-    //     $loginPatient = $this->authService->patientLogin($credentials);
-
-    //     if (!$loginPatient) {
-    //         return $this->fail('fail', null, 'Patient login fail', 404);
-    //     }
-
-    //     $token = $loginPatient->createToken('auth_token')->plainTextToken;
-    //     return $this->success('success', [
-    //         'data' => RegisterResource::make($loginPatient),
-    //         'token' => $token,
-    //         'role' => $loginPatient->getRoleNames(),
-    //     ], 'Patient login successfully', 200);
-    // }
-
     public function login(LoginRequest $request)
     {
         $validated = $request->validated();
@@ -84,6 +61,19 @@ class AuthController extends Controller
 
         $role = $user->getRoleNames()->first();
 
+        if (!$role) {
+            if ($user->patient_profile) {
+                $user->assignRole('patient');
+                $role = 'patient';
+            } elseif ($user->doctor_profile) {
+                $user->assignRole('doctor');
+                $role = 'doctor';
+            } else {
+                $user->assignRole('admin');
+                $role = 'admin';
+            }
+        }
+
         if ($role === 'patient') {
             $user->load('patient_profile');
         } elseif ($role === 'doctor') {
@@ -93,6 +83,7 @@ class AuthController extends Controller
         return $this->success('success', [
             'data' => LoginResource::make($user),
             'token' => $token,
+            'role' => $role,
         ], ucfirst($role) . ' login successfully', 200);
     }
 }

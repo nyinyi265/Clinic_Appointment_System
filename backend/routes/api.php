@@ -27,18 +27,29 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::prefix('v1')->group(function () {
-    Route::middleware(['auth:sanctum', 'role:patient'])->group(function () {
+    Route::middleware(['auth:sanctum', 'role:patient|doctor|admin,sanctum'])->group(function () {
+        Route::get('/all-clinics', [\App\Http\Controllers\Clinic\ClinicController::class, 'getAllClinics']);
+        Route::get('/all-specialities', [\App\Http\Controllers\Speciality\SpecialityController::class, 'getAllSpecialities']);
+        Route::get('/clinic/{clinic_id}', [\App\Http\Controllers\Clinic\ClinicController::class, 'getClinicById']);
+    });
+
+    Route::middleware(['auth:sanctum', 'role:patient|admin,sanctum'])->group(function () {
+        Route::get('/all-doctors', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'getAllDoctors']);
+
+        Route::post('/appointment', [\App\Http\Controllers\Appointment\AppointmentController::class, 'createAppointment']);
+    });
+
+    Route::middleware(['auth:sanctum', 'role:patient,sanctum'])->group(function () {
         Route::get('/patient/{patient_id}', [\App\Http\Controllers\PatientProfile\PatientProfileController::class, 'getPatientById']);
         Route::put('/patient/{patient_id}', [\App\Http\Controllers\PatientProfile\PatientProfileController::class, 'updatePatient']);
 
-        Route::get('/all-clinics', [\App\Http\Controllers\Clinic\ClinicController::class, 'getAllClinics']);
-        Route::get('/clinic/{clinic_id}', [\App\Http\Controllers\Clinic\ClinicController::class, 'getClinicById']);
-
         Route::get('/appointment/{id}', [\App\Http\Controllers\Appointment\AppointmentController::class, 'getAppointmentById']);
         Route::get('/patient/{patient_id}/appointments', [\App\Http\Controllers\Appointment\AppointmentController::class, 'getAppointmentsByPatient']);
+        // Route::put('/appointment/{id}', [\App\Http\Controllers\Appointment\AppointmentController::class, 'updateAppointment']);
+        Route::put('/appointment/{id}/status', [\App\Http\Controllers\Appointment\AppointmentController::class, 'updateAppointmentStatus']);
 
-        Route::get('/all-doctors', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'getAllDoctors']);
         Route::get('/doctor/{doctor_id}', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'getDoctorById']);
+
 
         Route::get('/all-doctor-clinics', [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'getAllDoctorClinics']);
         Route::get('/doctor-clinic/{id}', [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'getDoctorClinicById']);
@@ -46,7 +57,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/clinic/{clinic_id}/doctors', [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'getDoctorsByClinic']);
     });
 
-    Route::middleware(['auth:sanctum', 'role:doctor'])->group(function () {
+    Route::middleware(['auth:sanctum', 'role:doctor,sanctum'])->group(function () {
         Route::get('/appointment/{id}', [\App\Http\Controllers\Appointment\AppointmentController::class, 'getAppointmentById']);
         Route::get('/doctor/{doctor_id}/appointments', [\App\Http\Controllers\Appointment\AppointmentController::class, 'getAppointmentsByDoctor']);
 
@@ -55,10 +66,6 @@ Route::prefix('v1')->group(function () {
         Route::post('/doctor-clinic', [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'createDoctorClinic']);
         Route::put('/doctor-clinic/{id}', [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'updateDoctorClinic']);
 
-        Route::get('/all-clinics', [\App\Http\Controllers\Clinic\ClinicController::class, 'getAllClinics']);
-        Route::get('/clinic/{clinic_id}', [\App\Http\Controllers\Clinic\ClinicController::class, 'getClinicById']);
-
-        Route::get('/all-specialities', [\App\Http\Controllers\Speciality\SpecialityController::class, 'getAllSpecialities']);
         Route::post('/speciality', [\App\Http\Controllers\Speciality\SpecialityController::class, 'createSpeciality']);
 
         Route::get('/doctor-speciality/{id}', [\App\Http\Controllers\DoctorSpecialities\DoctorSpecialitiesController::class, 'getDoctorSpecialityById']);
@@ -73,13 +80,10 @@ Route::prefix('v1')->group(function () {
         Route::get('/patient/{patient_id}', [\App\Http\Controllers\PatientProfile\PatientProfileController::class, 'getPatientById']);
         Route::delete('/patient/{patient_id}', [\App\Http\Controllers\PatientProfile\PatientProfileController::class, 'deletePatient']);
 
-        Route::get('/all-clinics', [\App\Http\Controllers\Clinic\ClinicController::class, 'getAllClinics']);
-        Route::get('/clinic/{clinic_id}', [\App\Http\Controllers\Clinic\ClinicController::class, 'getClinicById']);
         Route::post('/clinic', [\App\Http\Controllers\Clinic\ClinicController::class, 'createClinic']);
         Route::put('/clinic/{clinic_id}', [\App\Http\Controllers\Clinic\ClinicController::class, 'updateClinic']);
         Route::delete('/clinic/{clinic_id}', [\App\Http\Controllers\Clinic\ClinicController::class, 'deleteClinic']);
 
-        Route::get('/all-doctors', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'getAllDoctors']);
         Route::delete('/doctor/{doctor_id}', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'deleteDoctor']);
 
 
@@ -87,7 +91,6 @@ Route::prefix('v1')->group(function () {
         Route::put('/doctor-clinic/{id}', [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'updateDoctorClinic']);
         Route::delete('/doctor-clinic/{id}', [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'deleteDoctorClinic']);
 
-        Route::get('/all-specialities', [\App\Http\Controllers\Speciality\SpecialityController::class, 'getAllSpecialities']);
         Route::get('/speciality/{id}', [\App\Http\Controllers\Speciality\SpecialityController::class, 'getSpecialityById']);
         Route::post('/speciality', [\App\Http\Controllers\Speciality\SpecialityController::class, 'createSpeciality']);
         Route::put('/speciality/{id}', [\App\Http\Controllers\Speciality\SpecialityController::class, 'updateSpeciality']);
@@ -103,7 +106,6 @@ Route::prefix('v1')->group(function () {
 
         Route::get('/all-appointments', [\App\Http\Controllers\Appointment\AppointmentController::class, 'getAllAppointments']);
         Route::get('/appointment/{id}', [\App\Http\Controllers\Appointment\AppointmentController::class, 'getAppointmentById']);
-        Route::post('/appointment', [\App\Http\Controllers\Appointment\AppointmentController::class, 'createAppointment']);
         Route::put('/appointment/{id}', [\App\Http\Controllers\Appointment\AppointmentController::class, 'updateAppointment']);
         Route::delete('/appointment/{id}', [\App\Http\Controllers\Appointment\AppointmentController::class, 'deleteAppointment']);
         Route::get('/clinic/{clinic_id}/appointments', [\App\Http\Controllers\Appointment\AppointmentController::class, 'getAppointmentsByClinic']);

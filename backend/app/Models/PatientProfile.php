@@ -13,6 +13,7 @@ class PatientProfile extends Model
         'dob',
         'gender',
         'address',
+        'profile_picture',
     ];
 
     public function user(){

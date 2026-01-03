@@ -26,12 +26,12 @@ class LoginResource extends JsonResource
 
         // Patient profile
         if ($this->relationLoaded('patient_profile') && $this->patient_profile) {
-            $data['profile'] = $this->patient_profile->makeHidden(['id','user_id', 'created_at', 'updated_at'])->toArray();
+            $data['profile'] = $this->patient_profile->makeHidden(['user_id', 'created_at', 'updated_at'])->toArray();
         }
 
         // Doctor profile
         if ($this->relationLoaded('doctor_profile') && $this->doctor_profile) {
-            $data['profile'] = $this->doctor_profile->makeHidden(['id', 'user_id', 'created_at', 'updated_at'])->toArray();
+            $data['profile'] = $this->doctor_profile->makeHidden(['user_id', 'created_at', 'updated_at'])->toArray();
         }
 
         return $data;

@@ -133,7 +133,7 @@ class DoctorClinicController extends Controller
                 'data' => DoctorClinicResource::collection($doctors),
             ], 'Doctors retrieved successfully', 200);
         } catch (\Exception $e) {
-            return $this->fail('fail', null, 'Internal server error', 500);
+            return $this->fail('fail', null, $e->getMessage(), 500);
         }
     }
 }

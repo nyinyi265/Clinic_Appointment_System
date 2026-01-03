@@ -29,6 +29,7 @@ class UpdateDoctorProfileRequest extends FormRequest
             'password' => 'string|min:8',
             'license_number' => 'string',
             'is_active' => 'boolean',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
 }

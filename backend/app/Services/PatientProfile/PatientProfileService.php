@@ -18,7 +18,7 @@ class PatientProfileService
 
     public function getPatientById($id)
     {
-        $patient = User::role('patient')->where('id', $id)->with('patient_profile')->first();
+        $patient = User::role('patient')->where('id', $id)->with('patient_profile')->firstOrFail();
         return $patient;
     }
 
@@ -58,6 +58,7 @@ class PatientProfileService
                 'dob' => $data['dob'] ?? null,
                 'gender' => $data['gender'] ?? null,
                 'address' => $data['address'] ?? null,
+                'profile_picture' => $data['profile_picture'] ?? null,
             ], fn($value) => !is_null($value));
 
             if (!empty($profileData)) {

@@ -19,6 +19,7 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+    protected $guard_name = 'sanctum';
     protected $fillable = [
         'first_name',
         'last_name',
@@ -49,15 +50,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-
-    public function getDefaultGuardName(): string
+    public function patient_profile()
     {
-        return 'web';
-    }
-    public function patient_profile(){
         return $this->hasOne(PatientProfile::class);
     }
-    public function doctor_profile(){
+    public function doctor_profile()
+    {
         return $this->hasOne(DoctorProfile::class);
     }
 }

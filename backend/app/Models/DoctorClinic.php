@@ -2,10 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class DoctorClinic extends Model
+class DoctorClinic extends Pivot
 {
+    protected $table = 'doctor_clinics';
+
+    public $incrementing = true;
+    public $timestamps = true;
+
     protected $fillable = [
         'doctor_profile_id',
         'clinic_id',

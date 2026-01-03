@@ -48,6 +48,6 @@ class DoctorClinicService
 
     public function getDoctorsByClinic($clinicId)
     {
-        return DoctorClinic::with('doctor')->where('clinic_id', $clinicId)->get();
+        return DoctorClinic::with(['doctor.user', 'doctor.specialities', 'clinic'])->where('clinic_id', $clinicId)->get();
     }
 }

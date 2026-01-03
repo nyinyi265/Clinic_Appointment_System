@@ -33,7 +33,7 @@ class DoctorProfileController extends Controller
                 'data' => DoctorProfileResource::collection($doctors),
             ], 'Doctors retrieved successfully', 200);
         } catch (\Exception $e) {
-            return $this->fail('fail', null, 'Internal server error', 500);
+            return $this->fail('fail', 'null', $e->getMessage(), 500);
         }
     }
 
@@ -117,6 +117,13 @@ class DoctorProfileController extends Controller
         DB::beginTransaction();
         try {
             $validated = $request->validated();
+
+            if ($request->hasFile('profile_picture')) {
+                $file = $request->file('profile_picture');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('images'), $filename);
+                $validated['profile_picture'] = 'images/' . $filename;
+            }
 
             $updatedDoctor = $this->doctorProfileService->updateDoctor($id, $validated);
 

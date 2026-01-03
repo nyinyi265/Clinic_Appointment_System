@@ -31,6 +31,7 @@ class UpdatePatientProfileRequest extends FormRequest
             'age' => 'integer|min:1',
             'dob' => 'date',
             'address' => 'string',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
 }

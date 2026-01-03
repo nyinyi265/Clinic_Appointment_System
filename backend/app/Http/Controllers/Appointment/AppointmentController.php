@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Appointment;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Appointment\StoreAppointmentRequest;
 use App\Http\Requests\Appointment\UpdateAppointmentRequest;
+use App\Http\Requests\Appointment\UpdateAppointmentStatusForPatientRequest;
 use App\Http\Resources\Appointment\AppointmentResource;
 use App\Services\Appointment\AppointmentService;
 use App\Trait\HttpResponse;
@@ -57,6 +58,15 @@ class AppointmentController extends Controller
         try {
             $validated = $request->validated();
 
+            // If patient_profile_id not provided and user is patient, set it
+            if (!isset($validated['patient_profile_id']) && auth()->user()->hasRole('patient')) {
+                $patientProfile = \App\Models\PatientProfile::where('user_id', auth()->id())->first();
+                if (!$patientProfile) {
+                    return $this->fail('fail', null, 'Patient profile not found', 404);
+                }
+                $validated['patient_profile_id'] = $patientProfile->id;
+            }
+
             $createdAppointment = $this->appointmentService->createAppointment($validated);
 
             if (!$createdAppointment) {
@@ -80,6 +90,30 @@ class AppointmentController extends Controller
         DB::beginTransaction();
         try {
             $validated = $request->validated();
+
+            // If user is patient, check if appointment belongs to them
+            if (auth()->user()->hasRole('patient')) {
+                $patientProfile = \App\Models\PatientProfile::where('user_id', auth()->id())->first();
+                if (!$patientProfile) {
+                    return $this->fail('fail', null, 'Patient profile not found', 404);
+                }
+                $appointment = $this->appointmentService->getAppointmentById($id);
+                if (!$appointment || $appointment->patient_profile_id != $patientProfile->id) {
+                    return $this->fail('fail', null, 'Unauthorized', 403);
+                }
+            }
+
+            // If user is doctor, check if appointment belongs to them
+            if (auth()->user()->hasRole('doctor')) {
+                $doctorProfile = \App\Models\DoctorProfile::where('user_id', auth()->id())->first();
+                if (!$doctorProfile) {
+                    return $this->fail('fail', null, 'Doctor profile not found', 404);
+                }
+                $appointment = $this->appointmentService->getAppointmentById($id);
+                if (!$appointment || $appointment->doctor_profile_id != $doctorProfile->id) {
+                    return $this->fail('fail', null, 'Unauthorized', 403);
+                }
+            }
 
             $updatedAppointment = $this->appointmentService->updateAppointment($id, $validated);
 
@@ -186,6 +220,29 @@ class AppointmentController extends Controller
             ], 'Appointments retrieved successfully', 200);
         } catch (\Exception $e) {
             return $this->fail('fail', null, 'Internal server error', 500);
+        }
+    }
+
+    public function updateAppointmentStatus($id, UpdateAppointmentStatusForPatientRequest $request)
+    {
+        DB::beginTransaction();
+        try {
+            $validated = $request->validated();
+            $status = $validated['status'];
+            $updatedAppointment = $this->appointmentService->updateAppointmentStatusForPatient($id, $status, auth()->user()->patient_profile->id);
+
+            if (!$updatedAppointment) {
+                return $this->fail('fail', null, 'Appointment not found', 404);
+            }
+
+            DB::commit();
+
+            return $this->success('success', [
+                'data' => AppointmentResource::make($updatedAppointment),
+            ], 'Appointment status updated successfully', 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->fail('fail', null, 'Unable to update appointment status', 500);
         }
     }
 }

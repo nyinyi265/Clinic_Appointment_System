@@ -25,6 +25,7 @@ class PatientProfileResource extends JsonResource
             'age' => $this->patient_profile->age,
             'dob' => $this->patient_profile->dob,
             'address' => $this->patient_profile->address,
+            'profile_picture' => $this->patient_profile->profile_picture,
             'role' => $this->getRoleNames(),
         ];
     }

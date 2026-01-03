@@ -13,6 +13,7 @@ class DoctorProfile extends Model
         'user_id',
         'license_number',
         'is_active',
+        'profile_picture',
     ];
 
     public function user()

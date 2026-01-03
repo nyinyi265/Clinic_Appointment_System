@@ -75,4 +75,32 @@ class AppointmentService
             ->where('status', $status)
             ->get();
     }
+
+    public function updateAppointmentStatusForPatient(
+        int $appointmentId,
+        string $status,
+        int $patientProfileId
+    ): Appointment {
+
+        $appointment = Appointment::where('id', $appointmentId)
+            ->where('patient_profile_id', $patientProfileId)
+            ->first();
+
+        if (!$appointment) {
+            throw new \Exception('Appointment not found');
+        }
+
+        if (!in_array($status, ['confirmed', 'cancelled'])) {
+            throw new \InvalidArgumentException('Invalid status');
+        }
+
+        if (in_array($appointment->status, ['completed', 'cancelled'])) {
+            throw new \Exception('Appointment cannot be updated');
+        }
+
+        $appointment->update(['status' => $status]);
+
+        return $appointment;
+    }
+
 }

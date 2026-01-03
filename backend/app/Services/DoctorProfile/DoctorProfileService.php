@@ -12,13 +12,15 @@ class DoctorProfileService
     //
     public function getAllDoctors()
     {
-        $doctors = User::role('doctor')->with(['doctor_profile.specialities'])->get();
+        $doctors = User::role('doctor')->whereHas('doctor_profile')->with(['doctor_profile.specialities', 'doctor_profile.clinics'])->get();
         return $doctors;
     }
 
     public function getDoctorById($id)
     {
-        $doctor = User::role('doctor')->where('id', $id)->with('doctor_profile')->first();
+        $doctor = User::role('doctor')->whereHas('doctor_profile', function($q) use ($id) {
+            $q->where('id', $id);
+        })->with('doctor_profile')->first();
         return $doctor;
     }
 
@@ -84,10 +86,9 @@ class DoctorProfileService
             }
 
             $profileData = array_filter([
-                'age' => $data['age'] ?? null,
-                'dob' => $data['dob'] ?? null,
-                'gender' => $data['gender'] ?? null,
-                'address' => $data['address'] ?? null,
+                'license_number' => $data['license_number'] ?? null,
+                'is_active' => $data['is_active'] ?? null,
+                'profile_picture' => $data['profile_picture'] ?? null,
             ], fn($value) => !is_null($value));
 
             if (!empty($profileData)) {

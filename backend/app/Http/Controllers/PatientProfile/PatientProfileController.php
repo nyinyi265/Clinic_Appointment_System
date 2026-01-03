@@ -57,6 +57,14 @@ class PatientProfileController extends Controller
         DB::beginTransaction();
         try {
             $validated = $request->validated();
+
+            if ($request->hasFile('profile_picture')) {
+                $file = $request->file('profile_picture');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('images'), $filename);
+                $validated['profile_picture'] = 'images/' . $filename;
+            }
+
             $updatedPatient = $this->patientProfileService->updatePatient($id, $validated);
             if(!$updatedPatient){
                 return $this->fail('fail', null, 'Fail to update patient', 404);
