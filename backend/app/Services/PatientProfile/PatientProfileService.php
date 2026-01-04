@@ -31,7 +31,7 @@ class PatientProfileService
 
     public function updatePatient($id, $data)
     {
-        // log()->info('Update Patient Data:', $data);
+        log()->info('Update Patient Data:', $data);
         $patient = User::role('patient')->where('id', $id)->first();
         if (!$patient) {
             return null;
@@ -68,7 +68,6 @@ class PatientProfileService
                 }
             }
         });
-
         return $patient->load('patient_profile');
     }
 }

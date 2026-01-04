@@ -103,4 +103,30 @@ class AppointmentService
         return $appointment;
     }
 
+    public function updateAppointmentStatusForDoctor(
+        int $appointmentId,
+        string $status,
+        int $doctorProfileId
+    ): Appointment {
+        $appointment = Appointment::where('id', $appointmentId)
+            ->where('doctor_profile_id', $doctorProfileId)
+            ->first();
+
+        if (!$appointment) {
+            throw new \Exception('Appointment not found');
+        }
+
+        if (!in_array($status, ['confirmed', 'completed', 'rejected'])) {
+            throw new \InvalidArgumentException('Invalid status');
+        }
+
+        if ($appointment->status === 'completed') {
+            throw new \Exception('Completed appointment cannot be updated');
+        }
+
+        $appointment->update(['status' => $status]);
+
+        return $appointment;
+    }
+
 }

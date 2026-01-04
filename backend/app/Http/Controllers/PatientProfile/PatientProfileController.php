@@ -11,6 +11,8 @@ use App\Trait\HttpResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+use function Illuminate\Log\log;
+
 class PatientProfileController extends Controller
 {
     use HttpResponse;
@@ -33,30 +35,35 @@ class PatientProfileController extends Controller
         ], 'Patients retrieved successfully', 200);
     }
 
-    public function getPatientById($id){
+    public function getPatientById($id)
+    {
         $patient = $this->patientProfileService->getPatientById($id);
 
-        if(!$patient){
+        if (!$patient) {
             return $this->fail('fail', null, 'Patient not found', 404);
         }
 
-        return $this->success('success',[
+        return $this->success('success', [
             'data' => RegisterResource::make($patient),
         ], 'Patient retrieved successfully', 200);
     }
 
-    public function deletePatient($id){
+    public function deletePatient($id)
+    {
         $deletedPatient = $this->patientProfileService->deletePatient($id);
-        if(!$deletedPatient){
+        if (!$deletedPatient) {
             return $this->fail('fail', null, 'Fail to delete patient', 404);
         }
         return $this->success('success', null, 'Patient deleted successfully', 200);
     }
 
-    public function updatePatient($id, UpdatePatientProfileRequest $request){
+    public function updatePatient($id, UpdatePatientProfileRequest $request)
+    {
         DB::beginTransaction();
         try {
             $validated = $request->validated();
+            log()->info('Update Patient Data:', $validated);
+
 
             if ($request->hasFile('profile_picture')) {
                 $file = $request->file('profile_picture');
@@ -66,7 +73,7 @@ class PatientProfileController extends Controller
             }
 
             $updatedPatient = $this->patientProfileService->updatePatient($id, $validated);
-            if(!$updatedPatient){
+            if (!$updatedPatient) {
                 return $this->fail('fail', null, 'Fail to update patient', 404);
             }
 

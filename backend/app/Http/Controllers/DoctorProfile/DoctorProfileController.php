@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\DoctorProfile\StoreDoctorProfileRequest;
 use App\Http\Requests\DoctorProfile\UpdateDoctorProfileRequest;
 use App\Http\Resources\DoctorProfile\DoctorProfileResource;
+use App\Models\PatientProfile;
 use App\Services\DoctorProfile\DoctorProfileService;
 use App\Trait\HttpResponse;
 use Illuminate\Support\Facades\Auth;
@@ -76,29 +77,6 @@ class DoctorProfileController extends Controller
         }
     }
 
-    // public function loginDoctor(LoginRequest $request)
-    // {
-    //     $credentials = $request->only(['email', 'password']);
-
-    //     if (!Auth::attempt($credentials)) {
-    //         return response()->json(['message' => 'Invalid Credentials'], 401);
-    //     }
-
-    //     $credentials = $request->validated();
-    //     $doctor = $this->doctorProfileService->doctorLogin($credentials);
-
-    //     if (!$doctor) {
-    //         return $this->fail('fail', null, 'Doctor login failed', 404);
-    //     }
-
-    //     $token = $doctor->createToken('auth_token')->plainTextToken;
-    //     return $this->success('success', [
-    //         'data' => DoctorProfileResource::make($doctor),
-    //         'token' => $token,
-    //         'role' => $doctor->getRoleNames(),
-    //     ], 'Doctor login successfully', 200);
-    // }
-
     public function deleteDoctor($id)
     {
         $deletedDoctor = $this->doctorProfileService->deleteDoctor($id);
@@ -141,4 +119,21 @@ class DoctorProfileController extends Controller
             return $this->fail('fail', null, 'Unable to update doctor profile', 500);
         }
     }
+
+    public function getPatientsByDoctor($doctorId)
+    {
+        try {
+            $patients = $this->doctorProfileService->getPatientsByDoctor($doctorId);
+            if (!$patients) {
+                return $this->fail('fail', null, 'No patients found for this doctor', 404);
+            }
+
+            return $this->success('success', [
+                'data' => $patients,
+            ], 'Patients retrieved successfully', 200);
+        } catch (\Exception $e) {
+            return $this->fail('fail', null, $e->getMessage(), 500);
+        }
+    }
+
 }

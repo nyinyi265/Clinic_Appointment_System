@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Appointment;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Appointment\StoreAppointmentRequest;
 use App\Http\Requests\Appointment\UpdateAppointmentRequest;
+use App\Http\Requests\Appointment\UpdateAppointmentStatus;
 use App\Http\Requests\Appointment\UpdateAppointmentStatusForPatientRequest;
 use App\Http\Resources\Appointment\AppointmentResource;
 use App\Services\Appointment\AppointmentService;
 use App\Trait\HttpResponse;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class AppointmentController extends Controller
 {
@@ -223,13 +223,36 @@ class AppointmentController extends Controller
         }
     }
 
-    public function updateAppointmentStatus($id, UpdateAppointmentStatusForPatientRequest $request)
+    public function updateAppointmentStatusForPatient($id, UpdateAppointmentStatus $request)
     {
         DB::beginTransaction();
         try {
             $validated = $request->validated();
             $status = $validated['status'];
             $updatedAppointment = $this->appointmentService->updateAppointmentStatusForPatient($id, $status, auth()->user()->patient_profile->id);
+
+            if (!$updatedAppointment) {
+                return $this->fail('fail', null, 'Appointment not found', 404);
+            }
+
+            DB::commit();
+
+            return $this->success('success', [
+                'data' => AppointmentResource::make($updatedAppointment),
+            ], 'Appointment status updated successfully', 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->fail('fail', null, 'Unable to update appointment status', 500);
+        }
+    }
+
+    public function updateAppointmentStatusForDoctor($id, UpdateAppointmentStatus $request)
+    {
+        DB::beginTransaction();
+        try {
+            $validated = $request->validated();
+            $status = $validated['status'];
+            $updatedAppointment = $this->appointmentService->updateAppointmentStatusForDoctor($id, $status, auth()->user()->doctor_profile->id);
 
             if (!$updatedAppointment) {
                 return $this->fail('fail', null, 'Appointment not found', 404);

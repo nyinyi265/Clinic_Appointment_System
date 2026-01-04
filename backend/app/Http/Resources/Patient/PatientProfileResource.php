@@ -20,13 +20,15 @@ class PatientProfileResource extends JsonResource
             'last_name' => $this->last_name,
             'phone_number' => $this->phone_number,
             'email' => $this->email,
-            'password' => $this->password,
-            'gender' => $this->patient_profile->gender,
-            'age' => $this->patient_profile->age,
-            'dob' => $this->patient_profile->dob,
-            'address' => $this->patient_profile->address,
-            'profile_picture' => $this->patient_profile->profile_picture,
-            'role' => $this->getRoleNames(),
+            'profile' => [
+                'id' => $this->patient_profile->id ?? null,
+                'gender' => $this->patient_profile->gender ?? null,
+                'age' => $this->patient_profile->age ?? null,
+                'dob' => $this->patient_profile->dob ?? null,
+                'address' => $this->patient_profile->address ?? null,
+                'profile_picture' => $this->patient_profile->profile_picture ?? null,
+            ],
         ];
+
     }
 }

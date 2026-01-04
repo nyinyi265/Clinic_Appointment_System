@@ -43,10 +43,10 @@ Route::prefix('v1')->group(function () {
         Route::get('/patient/{patient_id}', [\App\Http\Controllers\PatientProfile\PatientProfileController::class, 'getPatientById']);
         Route::put('/patient/{patient_id}', [\App\Http\Controllers\PatientProfile\PatientProfileController::class, 'updatePatient']);
 
-        Route::get('/appointment/{id}', [\App\Http\Controllers\Appointment\AppointmentController::class, 'getAppointmentById']);
+        // Route::get('/appointment/{id}', [\App\Http\Controllers\Appointment\AppointmentController::class, 'getAppointmentById']);
         Route::get('/patient/{patient_id}/appointments', [\App\Http\Controllers\Appointment\AppointmentController::class, 'getAppointmentsByPatient']);
         // Route::put('/appointment/{id}', [\App\Http\Controllers\Appointment\AppointmentController::class, 'updateAppointment']);
-        Route::put('/appointment/{id}/status', [\App\Http\Controllers\Appointment\AppointmentController::class, 'updateAppointmentStatus']);
+        Route::put('/patient/appointment/{id}/status', [\App\Http\Controllers\Appointment\AppointmentController::class, 'updateAppointmentStatusForPatient']);
 
         Route::get('/doctor/{doctor_id}', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'getDoctorById']);
 
@@ -58,11 +58,11 @@ Route::prefix('v1')->group(function () {
     });
 
     Route::middleware(['auth:sanctum', 'role:doctor,sanctum'])->group(function () {
-        Route::get('/appointment/{id}', [\App\Http\Controllers\Appointment\AppointmentController::class, 'getAppointmentById']);
+        Route::put('/doctor/appointment/{id}/status', [\App\Http\Controllers\Appointment\AppointmentController::class, 'updateAppointmentStatusForDoctor']);
+        // Route::get('/appointment/{id}', [\App\Http\Controllers\Appointment\AppointmentController::class, 'getAppointmentById']);
         Route::get('/doctor/{doctor_id}/appointments', [\App\Http\Controllers\Appointment\AppointmentController::class, 'getAppointmentsByDoctor']);
-
+        Route::get('/doctor/{doctor_id}/patients', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'getPatientsByDoctor']);
         Route::put('/doctor/{doctor_id}', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'updateDoctor']);
-
         Route::post('/doctor-clinic', [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'createDoctorClinic']);
         Route::put('/doctor-clinic/{id}', [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'updateDoctorClinic']);
 

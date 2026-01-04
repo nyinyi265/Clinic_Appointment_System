@@ -4,14 +4,14 @@ namespace App\Http\Requests\Appointment;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateAppointmentStatusForPatientRequest extends FormRequest
+class UpdateAppointmentStatus extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->user() && $this->user()->hasRole('patient');
+        return true;
     }
 
     /**
@@ -22,7 +22,7 @@ class UpdateAppointmentStatusForPatientRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => 'required|in:pending,confirmed,cancelled',
+            'status' => 'required|in:pending,confirmed,cancelled,completed,rejected',
         ];
     }
 }

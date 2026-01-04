@@ -2,6 +2,7 @@
 
 namespace App\Services\DoctorProfile;
 
+use App\Models\PatientProfile;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +19,7 @@ class DoctorProfileService
 
     public function getDoctorById($id)
     {
-        $doctor = User::role('doctor')->whereHas('doctor_profile', function($q) use ($id) {
+        $doctor = User::role('doctor')->whereHas('doctor_profile', function ($q) use ($id) {
             $q->where('id', $id);
         })->with('doctor_profile')->first();
         return $doctor;
@@ -101,5 +102,21 @@ class DoctorProfileService
         });
 
         return $doctor->load('doctor_profile');
+    }
+
+    public function getPatientsByDoctor($doctorId)
+    {
+        $patients = PatientProfile::whereHas('appointments', function ($q) use ($doctorId) {
+            $q->where('doctor_profile_id', $doctorId);
+        })
+            ->with('user')
+            ->withCount([
+                'appointments' => function ($q) use ($doctorId) {
+                    $q->where('doctor_profile_id', $doctorId);
+                }
+            ])
+            ->get();
+
+        return $patients;
     }
 }
