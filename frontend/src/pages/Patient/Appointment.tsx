@@ -72,7 +72,9 @@ const Appointment = () => {
   const [loadingClinics, setLoadingClinics] = useState(true);
   const [loadingDoctors, setLoadingDoctors] = useState(true);
   const [bookingAppointment, setBookingAppointment] = useState(false);
-  const [cancellingAppointment, setCancellingAppointment] = useState<number | null>(null);
+  const [cancellingAppointment, setCancellingAppointment] = useState<
+    number | null
+  >(null);
   const [showBookDialog, setShowBookDialog] = useState(false);
   const [selectedClinic, setSelectedClinic] = useState("");
   const [selectedDoctor, setSelectedDoctor] = useState("");
@@ -212,7 +214,13 @@ const Appointment = () => {
                     disabled={loadingClinics}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder={loadingClinics ? "Loading clinics..." : "Select clinic"} />
+                      <SelectValue
+                        placeholder={
+                          loadingClinics
+                            ? "Loading clinics..."
+                            : "Select clinic"
+                        }
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {clinics.map((clinic) => (
@@ -234,14 +242,20 @@ const Appointment = () => {
                     disabled={loadingDoctors}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder={loadingDoctors ? "Loading doctors..." : "Select doctor"} />
+                      <SelectValue
+                        placeholder={
+                          loadingDoctors
+                            ? "Loading doctors..."
+                            : "Select doctor"
+                        }
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {doctors.map((doctor) =>
-                        doctor.profile.is_active === true ? (
+                        doctor.profile.is_active == true ? (
                           <SelectItem
                             key={doctor.id}
-                            value={doctor.id.toString()}
+                            value={doctor.profile.id.toString()}
                           >
                             {doctor.first_name} {doctor.last_name}
                           </SelectItem>
@@ -336,15 +350,20 @@ const Appointment = () => {
                         </p>
                       )}
                       {appointment.status !== "cancelled" &&
-                        appointment.status !== "completed" && (
-                          <Button className="text-white cursor-pointer hover:bg-red-700"
+                        appointment.status !== "completed" &&
+                        appointment.status !== "confirmed" &&
+                        appointment.status !== "rejected" && (
+                          <Button
+                            className="text-white cursor-pointer hover:bg-red-700"
                             variant="destructive"
                             onClick={() =>
                               handleCancelAppointment(appointment.id)
                             }
                             disabled={cancellingAppointment === appointment.id}
                           >
-                            {cancellingAppointment === appointment.id ? "Cancelling..." : "Cancel"}
+                            {cancellingAppointment === appointment.id
+                              ? "Cancelling..."
+                              : "Cancel"}
                           </Button>
                         )}
                     </CardContent>

@@ -165,13 +165,6 @@ const DoctorDetail = () => {
                   <p className="text-sm text-muted-foreground mb-2">{doctorClinic.clinic.address}</p>
                   <p className="text-sm mb-2">Phone: {doctorClinic.clinic.phone_number}</p>
                   <p className="text-sm mb-4">Status: {doctorClinic.is_active ? 'Active' : 'Inactive'}</p>
-                  <Button
-                    className="mt-4"
-                    variant="outline"
-                    onClick={() => navigate(`/clinic/${doctorClinic.clinic.id}`)}
-                  >
-                    View Clinic
-                  </Button>
                 </CardContent>
               </Card>
             ))}

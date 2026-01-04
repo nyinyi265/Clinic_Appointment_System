@@ -149,13 +149,6 @@ const ClinicDetail = () => {
                   <p className="text-sm text-muted-foreground mb-2">
                     Specialities: {doctorClinic.doctor.specialities.map(s => s.name).join(', ')}
                   </p>
-                  <Button
-                    className="mt-4"
-                    variant="outline"
-                    onClick={() => navigate(`/doctor/${doctorClinic.doctor_profile_id}`)}
-                  >
-                    View Details
-                  </Button>
                 </CardContent>
               </Card>
             ))}

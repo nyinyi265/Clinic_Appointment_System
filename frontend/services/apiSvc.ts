@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import api from "../src/util/axios";
 import { AxiosError } from "axios";
 
@@ -191,11 +192,15 @@ export const updateAppointmentStatusByPatient = async (
   id: number,
   status: string
 ) => {
-  const response = await api.put(`/v1/appointment/${id}/status`, status, {
-    headers: {
-      Authorization: `Bearer ${getToken()}`,
-    },
-  });
+  const response = await api.put(
+    `/v1/patient/appointment/${id}/status`,
+    { status },
+    {
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+    }
+  );
   return response.data;
 };
 
@@ -227,10 +232,47 @@ export const getClinicsByDoctor = async (doctorId: number) => {
 };
 
 export const updatePatientProfile = async (id: number, data: FormData) => {
-  const response = await api.put(`/v1/patient/${id}`, data, {
+  data.append("_method", "PUT");
+
+  const response = await api.post(`/v1/patient/${id}`, data, {
     headers: {
       Authorization: `Bearer ${getToken()}`,
-      'Content-Type': 'multipart/form-data',
+    },
+    transformRequest: (data) => data,
+  });
+
+  return response.data;
+};
+
+export const getAppointmentByDoctorId = async (id: number) => {
+  const response = await api.get(`/v1/doctor/${id}/appointments`, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
+  return response.data;
+};
+
+export const updateAppointmentStatusByDoctor = async (
+  id: number,
+  status: string
+) => {
+  const response = await api.put(
+    `/v1/doctor/appointment/${id}/status`,
+    { status },
+    {
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+export const getPatientsByDoctorId = async (id: number) => {
+  const response = await api.get(`/v1/doctor/${id}/patients`, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
     },
   });
   return response.data;

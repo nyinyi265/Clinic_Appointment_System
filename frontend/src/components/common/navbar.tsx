@@ -32,7 +32,12 @@ const Navbar: React.FC<NavbarProps> = ({ role }) => {
   }, []);
 
   const visibleLinks = navLinks.filter(
-    (link) => !link.roles || (currentRole != null && link.roles.includes(currentRole))
+    (link) => {
+      if (currentRole === 'doctor') {
+        return link.roles && link.roles.includes('doctor');
+      }
+      return !link.roles || (currentRole != null && link.roles.includes(currentRole));
+    }
   );
 
   const handleLogout = () => {

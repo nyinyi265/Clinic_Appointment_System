@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import Navbar from '../../components/common/navbar';
-import Footer from '../../components/common/footer';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import Navbar from "../../components/common/navbar";
+import Footer from "../../components/common/footer";
+import { getPatientsByDoctorId } from "../../../services/apiSvc";
 
 interface Patient {
   id: number;
@@ -16,9 +17,9 @@ interface Patient {
   };
   age: number;
   dob: string;
-  gender: string;
+  gender: number;
   address: string;
-  appointments_count?: number;
+  appointments_count: number;
 }
 
 const Patients = () => {
@@ -27,9 +28,9 @@ const Patients = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
-      navigate('/login');
+      navigate("/login");
       return;
     }
     fetchPatients();
@@ -37,47 +38,16 @@ const Patients = () => {
 
   const fetchPatients = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const userId = JSON.parse(localStorage.getItem('user') || '{}').id;
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      const userId = user.data.profile.id;
 
-      // Get appointments to derive patients
-      const response = await fetch(`/api/v1/doctor/${userId}/appointments`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const data = await getPatientsByDoctorId(userId);
 
-      if (response.ok) {
-        const data = await response.json();
-        const appointments = data.data.data;
-
-        // Group appointments by patient and count
-        const patientMap = new Map<number, Patient & { appointments_count: number }>();
-
-        appointments.forEach((appointment: any) => {
-          const patient = appointment.patient_profile;
-          const patientId = patient.id;
-
-          if (!patientMap.has(patientId)) {
-            patientMap.set(patientId, {
-              id: patientId,
-              user: patient.user,
-              age: patient.age || 0,
-              dob: patient.dob || '',
-              gender: patient.gender || 'Unknown',
-              address: patient.address || '',
-              appointments_count: 1
-            });
-          } else {
-            const existing = patientMap.get(patientId)!;
-            existing.appointments_count += 1;
-          }
-        });
-
-        setPatients(Array.from(patientMap.values()));
+      if (data.status === "success") {
+        setPatients(data.data.data);
       }
     } catch (error) {
-      console.error('Error fetching patients:', error);
+      console.error("Error fetching patients:", error);
     } finally {
       setLoading(false);
     }
@@ -110,13 +80,16 @@ const Patients = () => {
                     </p>
                     <div className="flex justify-between items-center">
                       <span className="text-sm">Age: {patient.age}</span>
-                      <Badge variant="outline">{patient.gender}</Badge>
+                      <Badge variant="outline">{patient.gender === 1 ? "Male" : "Female"}</Badge>
                     </div>
                     <p className="text-sm">
-                      DOB: {patient.dob ? new Date(patient.dob).toLocaleDateString() : 'N/A'}
+                      DOB:{" "}
+                      {patient.dob
+                        ? new Date(patient.dob).toLocaleDateString()
+                        : "N/A"}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Address: {patient.address || 'N/A'}
+                      Address: {patient.address || "N/A"}
                     </p>
                     <div className="pt-2 border-t">
                       <p className="text-sm font-medium">
