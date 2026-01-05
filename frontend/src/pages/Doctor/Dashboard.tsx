@@ -6,6 +6,17 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Navbar from '../../components/common/navbar';
 import Footer from '../../components/common/footer';
+import LoadingOverlay from '../../components/common/LoadingOverlay';
+import {
+  Calendar,
+  Users,
+  Building2,
+  CheckCircle2,
+  Clock,
+  User,
+  MapPin,
+  Stethoscope
+} from 'lucide-react';
 
 interface Appointment {
   id: number;
@@ -142,139 +153,250 @@ const Dashboard = () => {
     }
   };
 
+  const pendingAppointments = appointments.filter(app => app.status === 'pending').length;
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar role="doctor" />
-      <main className="container mx-auto py-8 px-4">
-        <h1 className="text-3xl font-bold mb-6">Doctor Dashboard</h1>
 
-        {loading ? (
-          <p>Loading dashboard...</p>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Appointments Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle>My Appointments ({appointments.length})</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4 max-h-96 overflow-y-auto">
-                  {appointments.slice(0, 5).map((appointment) => (
-                    <div key={appointment.id} className="border rounded-lg p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <p className="font-semibold">
-                            {appointment.patient.user.first_name} {appointment.patient.user.last_name}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {appointment.clinic.name} • {appointment.appointment_date}
-                          </p>
-                          <p className="text-sm">
-                            {appointment.start_time} - {appointment.end_time}
-                          </p>
-                        </div>
-                        <Badge className={getStatusColor(appointment.status)}>
-                          {appointment.status}
-                        </Badge>
-                      </div>
-                      {appointment.notes && (
-                        <p className="text-sm text-muted-foreground mb-2">
-                          Notes: {appointment.notes}
-                        </p>
-                      )}
-                      <div className="flex gap-2">
-                        {appointment.status === 'pending' && (
-                          <>
-                            <Button
-                              size="sm"
-                              onClick={() => updateAppointmentStatus(appointment.id, 'confirmed')}
-                            >
-                              Confirm
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => updateAppointmentStatus(appointment.id, 'cancelled')}
-                            >
-                              Cancel
-                            </Button>
-                          </>
-                        )}
-                        {appointment.status === 'confirmed' && (
-                          <Button
-                            size="sm"
-                            onClick={() => updateAppointmentStatus(appointment.id, 'completed')}
-                          >
-                            Mark Complete
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                  {appointments.length > 5 && (
-                    <Button variant="outline" className="w-full">
-                      View All Appointments
-                    </Button>
-                  )}
+      {loading && <LoadingOverlay message="Loading dashboard..." />}
+
+      {!loading && (
+        <main className="container mx-auto py-10 px-4 space-y-8">
+          {/* Header */}
+          <section className="space-y-1">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground/90">
+              Dashboard Overview
+            </h1>
+            <p className="text-muted-foreground">
+              Welcome back! Here's an overview of your practice and recent activities.
+            </p>
+          </section>
+
+          {/* Statistics Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow ring-1 ring-border/50">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">Total Appointments</p>
+                    <p className="text-3xl font-bold text-foreground">{appointments.length}</p>
+                  </div>
+                  <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <Calendar className="h-6 w-6 text-blue-600" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Patients Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle>My Patients ({patients.length})</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4 max-h-96 overflow-y-auto">
-                  {patients.slice(0, 5).map((patient) => (
-                    <div key={patient.id} className="border rounded-lg p-4">
-                      <p className="font-semibold">
-                        {patient.user.first_name} {patient.user.last_name}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Age: {patient.age} • Gender: {patient.gender}
-                      </p>
-                    </div>
-                  ))}
-                  {patients.length > 5 && (
-                    <Button variant="outline" className="w-full">
-                      View All Patients
-                    </Button>
-                  )}
+            <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow ring-1 ring-border/50">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">Total Patients</p>
+                    <p className="text-3xl font-bold text-foreground">{patients.length}</p>
+                  </div>
+                  <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
+                    <Users className="h-6 w-6 text-green-600" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Clinics Section */}
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>My Clinics ({doctorClinics.length})</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {doctorClinics.map((doctorClinic) => (
-                    <div key={doctorClinic.id} className="border rounded-lg p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <p className="font-semibold">{doctorClinic.clinic.name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {doctorClinic.clinic.address}
-                          </p>
-                          <p className="text-sm">Role: {doctorClinic.role}</p>
-                        </div>
-                        <Badge variant={doctorClinic.is_active ? 'default' : 'secondary'}>
-                          {doctorClinic.is_active ? 'Active' : 'Inactive'}
-                        </Badge>
-                      </div>
-                    </div>
-                  ))}
+            <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow ring-1 ring-border/50">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">Active Clinics</p>
+                    <p className="text-3xl font-bold text-foreground">{doctorClinics.filter(c => c.is_active).length}</p>
+                  </div>
+                  <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <Building2 className="h-6 w-6 text-purple-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow ring-1 ring-border/50">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">Pending Appointments</p>
+                    <p className="text-3xl font-bold text-foreground">{pendingAppointments}</p>
+                  </div>
+                  <div className="h-12 w-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                    <Clock className="h-6 w-6 text-orange-600" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </div>
-        )}
-      </main>
+
+          {/* Recent Appointments & Patients */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Recent Appointments */}
+            <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow ring-1 ring-border/50">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                <div className="space-y-1">
+                  <CardTitle className="text-xl font-semibold tracking-tight">
+                    Recent Appointments
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Your latest appointment bookings
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate('/doctor/appointments')}
+                  className="shrink-0"
+                >
+                  View All
+                </Button>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {appointments.slice(0, 3).map((appointment) => (
+                  <div key={appointment.id} className="flex items-start gap-4 rounded-xl bg-muted/50 p-4">
+                    <div className="h-10 w-10 bg-brandBlue/10 rounded-lg flex items-center justify-center shrink-0">
+                      <User className="h-5 w-5 text-brandBlue" />
+                    </div>
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-medium text-sm">
+                          {appointment.patient.user.first_name} {appointment.patient.user.last_name}
+                        </h4>
+                        <Badge
+                          variant="outline"
+                          className={`px-2 py-0.5 text-xs font-medium border ${getStatusColor(appointment.status)}`}
+                        >
+                          {appointment.status}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <MapPin className="h-3 w-3" />
+                        <span>{appointment.clinic.name}</span>
+                        <span>•</span>
+                        <span>{appointment.appointment_date}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {appointment.start_time} - {appointment.end_time}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                {appointments.length === 0 && (
+                  <div className="text-center py-8">
+                    <Stethoscope className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-sm text-muted-foreground">No appointments yet</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Recent Patients */}
+            <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow ring-1 ring-border/50">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                <div className="space-y-1">
+                  <CardTitle className="text-xl font-semibold tracking-tight">
+                    Recent Patients
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Patients you've recently treated
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate('/doctor/patients')}
+                  className="shrink-0"
+                >
+                  View All
+                </Button>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {patients.slice(0, 3).map((patient) => (
+                  <div key={patient.id} className="flex items-center gap-4 rounded-xl bg-muted/50 p-4">
+                    <div className="h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center shrink-0">
+                      <User className="h-5 w-5 text-green-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-medium text-sm">
+                        {patient.user.first_name} {patient.user.last_name}
+                      </h4>
+                      <p className="text-xs text-muted-foreground">
+                        Age: {patient.age} • Gender: {patient.gender}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                {patients.length === 0 && (
+                  <div className="text-center py-8">
+                    <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-sm text-muted-foreground">No patients yet</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Clinics Overview */}
+          <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow ring-1 ring-border/50">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+              <div className="space-y-1">
+                <CardTitle className="text-xl font-semibold tracking-tight">
+                  My Clinics
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Clinics where you provide medical services
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/doctor/clinics')}
+                className="shrink-0"
+              >
+                Manage Clinics
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {doctorClinics.map((doctorClinic) => (
+                  <div key={doctorClinic.id} className="rounded-xl border bg-card p-4 hover:shadow-sm transition-shadow">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="h-10 w-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <Building2 className="h-5 w-5 text-purple-600" />
+                      </div>
+                      <Badge
+                        variant={doctorClinic.is_active ? "default" : "secondary"}
+                        className="text-xs"
+                      >
+                        {doctorClinic.is_active ? "Active" : "Inactive"}
+                      </Badge>
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="font-medium text-sm">{doctorClinic.clinic.name}</h4>
+                      <p className="text-xs text-muted-foreground line-clamp-2">
+                        {doctorClinic.clinic.address}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Role: {doctorClinic.role}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                {doctorClinics.length === 0 && (
+                  <div className="col-span-full text-center py-8">
+                    <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-sm text-muted-foreground">No clinics assigned yet</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </main>
+      )}
+
       <Footer />
     </div>
   );

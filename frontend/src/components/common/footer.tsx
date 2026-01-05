@@ -8,8 +8,8 @@ const Footer: React.FC = () => {
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Logo & Description */}
         <div>
-          <h2 className="flex gap-2 items-center text-blue-600 text-xl font-bold mb-2">
-            <div className="bg-blue-600 rounded-md p-2">
+          <h2 className="flex gap-2 items-center text-brandBlue text-xl font-bold mb-2">
+            <div className="bg-brandBlue  rounded-xl p-2">
               <Stethoscope className="h-6 w-6 text-white font-bold" />
             </div>
             Care Point

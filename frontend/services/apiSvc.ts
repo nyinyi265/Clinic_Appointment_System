@@ -244,6 +244,19 @@ export const updatePatientProfile = async (id: number, data: FormData) => {
   return response.data;
 };
 
+export const updateDoctorProfile = async (id: number, data: FormData) => {
+  data.append("_method", "PUT");
+
+  const response = await api.post(`/v1/doctor/${id}`, data, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+    transformRequest: (data) => data,
+  });
+
+  return response.data;
+};
+
 export const getAppointmentByDoctorId = async (id: number) => {
   const response = await api.get(`/v1/doctor/${id}/appointments`, {
     headers: {
