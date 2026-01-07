@@ -2,7 +2,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import Navbar from "../../components/common/navbar";
 import Footer from "../../components/common/footer";
+import LoadingOverlay from "../../components/common/LoadingOverlay";
 import {
   createAppointment,
   getAllClinics,
@@ -28,6 +30,7 @@ import {
   getAppointmentByPatientId,
   updateAppointmentStatusByPatient,
 } from "../../../services/apiSvc";
+import { Calendar, Clock, MapPin, MessageSquare, Plus } from "lucide-react";
 
 interface Appointment {
   id: number;
@@ -189,21 +192,50 @@ const Appointment = () => {
     }
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "bg-yellow-100 text-yellow-700 border-yellow-200";
+      case "confirmed":
+        return "bg-blue-100 text-blue-700 border-blue-200";
+      case "completed":
+        return "bg-emerald-100 text-emerald-700 border-emerald-200";
+      case "cancelled":
+        return "bg-red-100 text-red-700 border-red-200";
+      default:
+        return "bg-gray-100 text-gray-700 border-gray-200";
+    }
+  };
+
+  const activeAppointments = appointments.filter(
+    (appointment) => appointment.status !== "cancelled"
+  );
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar role="patient" />
-      <main className="container mx-auto py-8 px-4">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">My Appointments</h1>
+
+      <main className="container mx-auto py-10 px-4 space-y-8 bg-gradient-to-b from-background to-muted/20 min-h-[calc(100vh-200px)]">
+        {/* Header */}
+        <section className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-1">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground/90">
+              My Appointments
+            </h1>
+            <p className="text-muted-foreground">
+              Manage your healthcare appointments and bookings.
+            </p>
+          </div>
           <Dialog open={showBookDialog} onOpenChange={setShowBookDialog}>
             <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 cursor-pointer">
+              <Button className="shadow-sm gap-2 bg-brandBlue hover:bg-brandBlue/90 text-white cursor-pointer">
+                <Plus className="h-4 w-4" />
                 Book New Appointment
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle>Book Appointment</DialogTitle>
+                <DialogTitle>Book New Appointment</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <div>
@@ -251,20 +283,16 @@ const Appointment = () => {
                       />
                     </SelectTrigger>
                     <SelectContent>
-                      {doctors.map((doctor) =>
-                        doctor.profile.is_active == true ? (
+                      {doctors
+                        .filter((doctor) => doctor.profile.is_active)
+                        .map((doctor) => (
                           <SelectItem
                             key={doctor.id}
                             value={doctor.profile.id.toString()}
                           >
                             {doctor.first_name} {doctor.last_name}
                           </SelectItem>
-                        ) : (
-                          <div className="text-sm py-1 px-2">
-                            No Doctor Available
-                          </div>
-                        )
-                      )}
+                        ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -277,7 +305,7 @@ const Appointment = () => {
                     onChange={(e) => setAppointmentDate(e.target.value)}
                   />
                 </div>
-                <div className="flex gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   <div>
                     <Label htmlFor="start">Start Time</Label>
                     <Input
@@ -308,7 +336,7 @@ const Appointment = () => {
                 </div>
                 <Button
                   onClick={handleBookAppointment}
-                  className="w-full bg-blue-600 hover:bg-blue-700 cursor-pointer"
+                  className="w-full bg-brandBlue hover:bg-brandBlue/90 text-white cursor-pointer"
                   disabled={bookingAppointment}
                 >
                   {bookingAppointment ? "Booking..." : "Book Appointment"}
@@ -316,63 +344,119 @@ const Appointment = () => {
               </div>
             </DialogContent>
           </Dialog>
-        </div>
-        {loadingAppointments ? (
-          <p>Loading appointments...</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {appointments.map(
-              (appointment) =>
-                appointment.status !== "cancelled" && (
-                  <Card key={appointment.id}>
-                    <CardHeader>
-                      <CardTitle>
-                        {appointment.doctor.user.first_name}{" "}
-                        {appointment.doctor.user.last_name}
-                      </CardTitle>
+        </section>
+
+        {loadingAppointments && <LoadingOverlay message="Loading appointments..." />}
+
+        {!loadingAppointments && (
+          <>
+            {activeAppointments.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {activeAppointments.map((appointment) => (
+                  <Card
+                    key={appointment.id}
+                    className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow ring-1 ring-border/50"
+                  >
+                    <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
+                      <div className="space-y-1">
+                        <h3 className="font-semibold text-lg tracking-tight">
+                          {appointment.doctor.user.first_name} {appointment.doctor.user.last_name}
+                        </h3>
+                        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                          <MapPin className="h-3.5 w-3.5" />
+                          <span>{appointment.clinic.name}</span>
+                        </div>
+                      </div>
+                      <Badge
+                        variant="outline"
+                        className={`px-2.5 py-0.5 font-medium border shadow-none ${getStatusColor(appointment.status)}`}
+                      >
+                        {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
+                      </Badge>
                     </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        {appointment.clinic.name}
-                      </p>
-                      <p className="text-sm mb-1">
-                        Date: {appointment.appointment_date}
-                      </p>
-                      <p className="text-sm mb-1">
-                        Time: {appointment.start_time} - {appointment.end_time}
-                      </p>
-                      <p className="text-sm mb-4">
-                        Status: {appointment.status}
-                      </p>
+
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4 rounded-xl bg-muted/50 p-3">
+                        <div className="space-y-1">
+                          <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground flex items-center gap-1">
+                            <Calendar className="h-3 w-3" /> Date
+                          </span>
+                          <p className="text-sm font-medium">
+                            {appointment.appointment_date}
+                          </p>
+                        </div>
+                        <div className="space-y-1 border-l pl-4">
+                          <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground flex items-center gap-1">
+                            <Clock className="h-3 w-3" /> Time
+                          </span>
+                          <p className="text-sm font-medium">
+                            {appointment.start_time} - {appointment.end_time}
+                          </p>
+                        </div>
+                      </div>
+
                       {appointment.notes && (
-                        <p className="text-sm mb-4">
-                          Notes: {appointment.notes}
-                        </p>
+                        <div className="flex items-start gap-2.5 rounded-lg border bg-accent/30 p-3">
+                          <MessageSquare className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                          <div className="space-y-0.5">
+                            <span className="text-[10px] uppercase font-bold tracking-wider text-primary/70">
+                              Notes
+                            </span>
+                            <p className="text-xs leading-relaxed text-muted-foreground italic">
+                              "{appointment.notes}"
+                            </p>
+                          </div>
+                        </div>
                       )}
-                      {appointment.status !== "cancelled" &&
-                        appointment.status !== "completed" &&
-                        appointment.status !== "confirmed" &&
-                        appointment.status !== "rejected" && (
-                          <Button
-                            className="text-white cursor-pointer hover:bg-red-700"
-                            variant="destructive"
-                            onClick={() =>
-                              handleCancelAppointment(appointment.id)
-                            }
-                            disabled={cancellingAppointment === appointment.id}
-                          >
-                            {cancellingAppointment === appointment.id
-                              ? "Cancelling..."
-                              : "Cancel"}
-                          </Button>
-                        )}
                     </CardContent>
+
+                    <div className="p-6 pt-0">
+                      {appointment.status === "pending" && (
+                        <Button
+                          variant="destructive"
+                          className="w-full shadow-sm gap-2 cursor-pointer"
+                          onClick={() => handleCancelAppointment(appointment.id)}
+                          disabled={cancellingAppointment === appointment.id}
+                        >
+                          {cancellingAppointment === appointment.id ? "Cancelling..." : "Cancel Appointment"}
+                        </Button>
+                      )}
+                      {(appointment.status === "confirmed" || appointment.status === "completed") && (
+                        <Button
+                          variant="outline"
+                          className="w-full text-muted-foreground cursor-not-allowed"
+                          disabled
+                        >
+                          {appointment.status === "confirmed" ? "Confirmed" : "Completed"}
+                        </Button>
+                      )}
+                    </div>
                   </Card>
-                )
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16 bg-gray-50 rounded-lg shadow-sm mx-auto border border-border/50">
+                <div className="mx-auto w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-4">
+                  <Calendar className="h-12 w-12 text-muted-foreground" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">No Appointments Yet</h3>
+                <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                  You haven't booked any appointments yet. Schedule your first healthcare consultation to get started.
+                </p>
+                <Dialog open={showBookDialog} onOpenChange={setShowBookDialog}>
+                  <DialogTrigger asChild>
+                    <Button className="shadow-sm gap-2 bg-brandBlue hover:bg-brandBlue/90 text-white cursor-pointer">
+                      <Plus className="h-4 w-4" />
+                      Book Your First Appointment
+                    </Button>
+                  </DialogTrigger>
+                </Dialog>
+              </div>
             )}
-          </div>
+          </>
         )}
       </main>
+
       <Footer />
     </div>
   );

@@ -82,7 +82,7 @@ const Footer: React.FC = () => {
               placeholder="Email address"
               className="border border-gray-300 rounded-l px-3 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <button className="bg-blue-600 text-white px-4 rounded-r hover:bg-blue-700">
+            <button className="bg-brandBlue text-white px-4 rounded-r hover:bg-blue-700">
               Subscribe
             </button>
           </div>
