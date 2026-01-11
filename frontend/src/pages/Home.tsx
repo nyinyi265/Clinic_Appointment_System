@@ -224,7 +224,7 @@ const Home = () => {
       </section>
 
       {/* Statistics Section */}
-      <section className="py-20 px-4">
+      <section className="py-4 px-4">
         <div className="container mx-auto">
           <div className="bg-gradient-to-r from-brandBlue to-primary rounded-3xl p-8 md:p-12 text-white">
             <div className="text-center mb-12">

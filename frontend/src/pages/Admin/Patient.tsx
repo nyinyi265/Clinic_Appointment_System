@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { getAllPatients, deletePatientById } from "../../../services/apiSvc";
-import { Trash2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 
 export default function Patient() {
   const [patients, setPatients] = useState([]);
@@ -21,7 +21,7 @@ export default function Patient() {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     fetchPatients();
   }, []);
@@ -36,6 +36,14 @@ export default function Patient() {
   };
   return (
     <div>
+      {loading && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground">Loading patients...</p>
+          </div>
+        </div>
+      )}
       <h1 className="text-2xl font-bold mb-4">Patients</h1>
 
       <div className="bg-white p-4 rounded shadow">
@@ -66,12 +74,12 @@ export default function Patient() {
                   </td>
                   <td className="border p-2">{patient.email}</td>
                   <td className="border p-2">{patient.phone_number}</td>
-                  <td className="border p-2">{patient.dob}</td>
-                  <td className="border p-2">{patient.age}</td>
+                  <td className="border p-2">{patient.profile.dob}</td>
+                  <td className="border p-2">{patient.profile.age}</td>
                   <td className="border p-2">
                     {patient.gender === 0 ? "Male" : "Female"}
                   </td>
-                  <td className="border p-2">{patient.address}</td>
+                  <td className="border p-2">{patient.profile.address}</td>
                   <td className="border p-2 flex justify-center">
                     <button
                       className="flex items-center justify-center bg-red-600 p-2 rounded-md text-white cursor-pointer hover:bg-red-700"
@@ -82,13 +90,6 @@ export default function Patient() {
                   </td>
                 </tr>
               ))}
-            {loading && (
-              <tr>
-                <td className="border p-2 text-center" colSpan={9}>
-                  Loading patients...
-                </td>
-              </tr>
-            )}
             {!patients && !loading ? (
               <tr>
                 <td className="border p-2 text-center" colSpan={9}>

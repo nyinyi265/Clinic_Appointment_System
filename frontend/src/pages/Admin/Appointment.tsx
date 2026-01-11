@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { deleteAppointmentById, getAllAppointments } from "../../../services/apiSvc";
-import { Trash2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 
 export default function Appointment() {
   const [appointments, setAppointment] = useState([]);
@@ -41,6 +41,14 @@ export default function Appointment() {
 
   return (
     <div>
+      {loading && (
+      <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground">Loading appointments...</p>
+        </div>
+      </div>
+    )}
       <h1 className="text-2xl font-bold mb-4">Appointments</h1>
 
       <div className="bg-white p-4 rounded shadow">
@@ -93,14 +101,6 @@ export default function Appointment() {
                   </td>
                 </tr>
               ))}
-
-            {loading && (
-              <tr>
-                <td colSpan={8} className="border p-2 text-center">
-                  Loading Appointments...
-                </td>
-              </tr>
-            )}
 
             {appointments.length === 0 && !loading && (
               <tr>

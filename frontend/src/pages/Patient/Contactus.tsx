@@ -1,11 +1,12 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import Navbar from '../../components/common/navbar';
-import Footer from '../../components/common/footer';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Navbar from "../../components/common/navbar";
+import Footer from "../../components/common/footer";
+// import { toast } from "sonner";
 import {
   Mail,
   Phone,
@@ -13,40 +14,54 @@ import {
   Clock,
   Send,
   MessageCircle,
-  HeadphonesIcon,
   HelpCircle,
   Facebook,
   Twitter,
   Instagram,
-  Linkedin
-} from 'lucide-react';
+  Linkedin,
+} from "lucide-react";
+import { sendMessage } from "../../../services/apiSvc";
 
 const Contactus = () => {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    subject: '',
-    message: ''
+    firstName: "",
+    lastName: "",
+    email: "",
+    subject: "",
+    message: "",
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log('Form submitted:', formData);
-    // Reset form
-    setFormData({
-      firstName: '',
-      lastName: '',
-      email: '',
-      subject: '',
-      message: ''
-    });
+    try {
+      const response = await sendMessage({
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+      });
+      console.log("Message sent successfully:", response);
+      // toast.success("Message sent successfully!");
+      // Reset form
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        subject: "",
+        message: "",
+      });
+    } catch (error) {
+      // toast.error("Failed to send message. Please try again.");
+      console.error("Error sending message:", error);
+    }
   };
 
   return (
@@ -54,8 +69,16 @@ const Contactus = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-brandBlue/10 via-background to-muted/30 py-20 px-4">
-        <div className="container mx-auto text-center space-y-6">
+      <section
+        className="relative py-20 md:py-32 px-4 overflow-hidden"
+        style={{
+          backgroundImage: "url(/images/contact-us.jpg)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="absolute inset-0 bg-black/20 backdrop-blur-sm"></div>
+        <div className="container mx-auto text-center space-y-8 relative z-10">
           <div className="inline-flex items-center gap-2 bg-brandBlue/10 text-brandBlue px-4 py-2 rounded-full text-sm font-medium">
             <MessageCircle className="h-4 w-4" />
             Get In Touch
@@ -63,9 +86,9 @@ const Contactus = () => {
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight bg-gradient-to-r from-brandBlue to-primary bg-clip-text text-transparent">
             Contact Us
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Have questions about our services? Need support with your appointments?
-            We're here to help you every step of the way.
+          <p className="bg-black/30 p-4 text-xl md:text-2xl text-white max-w-4xl mx-auto leading-relaxed rounded-lg">
+            Have questions about our services? Need support with your
+            appointments? We're here to help you every step of the way.
           </p>
         </div>
       </section>
@@ -83,7 +106,9 @@ const Contactus = () => {
             <CardContent>
               <p className="text-muted-foreground mb-2">Call us directly</p>
               <p className="font-semibold text-brandBlue">+1 (555) 123-4567</p>
-              <p className="text-sm text-muted-foreground mt-1">Mon-Fri 9AM-6PM</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Mon-Fri 9AM-6PM
+              </p>
             </CardContent>
           </Card>
 
@@ -96,8 +121,12 @@ const Contactus = () => {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground mb-2">Send us an email</p>
-              <p className="font-semibold text-brandBlue">support@carepoint.com</p>
-              <p className="text-sm text-muted-foreground mt-1">We reply within 24 hours</p>
+              <p className="font-semibold text-brandBlue">
+                support@carepoint.com
+              </p>
+              <p className="text-sm text-muted-foreground mt-1">
+                We reply within 24 hours
+              </p>
             </CardContent>
           </Card>
 
@@ -111,7 +140,9 @@ const Contactus = () => {
             <CardContent>
               <p className="text-muted-foreground mb-2">Visit our office</p>
               <p className="font-semibold text-brandBlue">123 Healthcare Ave</p>
-              <p className="text-sm text-muted-foreground mt-1">Medical District, NY 10001</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Medical District, NY 10001
+              </p>
             </CardContent>
           </Card>
 
@@ -125,7 +156,9 @@ const Contactus = () => {
             <CardContent>
               <p className="text-muted-foreground mb-2">When we're available</p>
               <p className="font-semibold text-brandBlue">24/7</p>
-              <p className="text-sm text-muted-foreground mt-1">Emergency support always</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Emergency support always
+              </p>
             </CardContent>
           </Card>
         </section>
@@ -140,7 +173,8 @@ const Contactus = () => {
                 Send us a Message
               </CardTitle>
               <p className="text-muted-foreground">
-                Fill out the form below and we'll get back to you as soon as possible.
+                Fill out the form below and we'll get back to you as soon as
+                possible.
               </p>
             </CardHeader>
             <CardContent>
@@ -211,7 +245,10 @@ const Contactus = () => {
                   />
                 </div>
 
-                <Button type="submit" className="w-full bg-brandBlue hover:bg-brandBlue/90 text-white shadow-lg">
+                <Button
+                  type="submit"
+                  className="w-full bg-brandBlue hover:bg-brandBlue/90 text-white shadow-lg cursor-pointer"
+                >
                   <Send className="mr-2 h-4 w-4" />
                   Send Message
                 </Button>
@@ -234,36 +271,48 @@ const Contactus = () => {
             <div className="space-y-4">
               <Card className="border-l-4 border-l-brandBlue">
                 <CardContent className="pt-4">
-                  <h3 className="font-semibold mb-2">How do I book an appointment?</h3>
+                  <h3 className="font-semibold mb-2">
+                    How do I book an appointment?
+                  </h3>
                   <p className="text-sm text-muted-foreground">
-                    Simply create an account, browse available doctors and clinics, and book your preferred time slot.
+                    Simply create an account, browse available doctors and
+                    clinics, and book your preferred time slot.
                   </p>
                 </CardContent>
               </Card>
 
               <Card className="border-l-4 border-l-emerald-500">
                 <CardContent className="pt-4">
-                  <h3 className="font-semibold mb-2">What if I need to cancel my appointment?</h3>
+                  <h3 className="font-semibold mb-2">
+                    What if I need to cancel my appointment?
+                  </h3>
                   <p className="text-sm text-muted-foreground">
-                    You can cancel appointments through your dashboard up to 24 hours before the scheduled time.
+                    You can cancel appointments through your dashboard up to 24
+                    hours before the scheduled time.
                   </p>
                 </CardContent>
               </Card>
 
               <Card className="border-l-4 border-l-purple-500">
                 <CardContent className="pt-4">
-                  <h3 className="font-semibold mb-2">Is my health information secure?</h3>
+                  <h3 className="font-semibold mb-2">
+                    Is my health information secure?
+                  </h3>
                   <p className="text-sm text-muted-foreground">
-                    Yes, we use enterprise-grade encryption and comply with all healthcare privacy regulations.
+                    Yes, we use enterprise-grade encryption and comply with all
+                    healthcare privacy regulations.
                   </p>
                 </CardContent>
               </Card>
 
               <Card className="border-l-4 border-l-orange-500">
                 <CardContent className="pt-4">
-                  <h3 className="font-semibold mb-2">Do you accept all insurance plans?</h3>
+                  <h3 className="font-semibold mb-2">
+                    Do you accept all insurance plans?
+                  </h3>
                   <p className="text-sm text-muted-foreground">
-                    We work with most major insurance providers. Contact us to verify coverage for your plan.
+                    We work with most major insurance providers. Contact us to
+                    verify coverage for your plan.
                   </p>
                 </CardContent>
               </Card>
@@ -275,29 +324,24 @@ const Contactus = () => {
         <section className="bg-gradient-to-r from-brandBlue/5 to-emerald-500/5 rounded-2xl p-8 md:p-12">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold mb-4">Stay Connected</h2>
-            <p className="text-muted-foreground text-lg">Follow us for health tips and updates</p>
+            <p className="text-muted-foreground text-lg">
+              Follow us for health tips and updates
+            </p>
           </div>
 
           <div className="flex justify-center gap-6 mb-8">
-            <Button variant="outline" size="lg" className="hover:bg-blue-50">
+            <Button variant="outline" size="lg" className="hover:bg-blue-50 cursor-pointer">
               <Facebook className="h-5 w-5 text-blue-600" />
             </Button>
-            <Button variant="outline" size="lg" className="hover:bg-sky-50">
+            <Button variant="outline" size="lg" className="hover:bg-sky-50  cursor-pointer">
               <Twitter className="h-5 w-5 text-sky-500" />
             </Button>
-            <Button variant="outline" size="lg" className="hover:bg-pink-50">
+            <Button variant="outline" size="lg" className="hover:bg-pink-50 cursor-pointer">
               <Instagram className="h-5 w-5 text-pink-600" />
             </Button>
-            <Button variant="outline" size="lg" className="hover:bg-blue-50">
+            <Button variant="outline" size="lg" className="hover:bg-blue-50 cursor-pointer">
               <Linkedin className="h-5 w-5 text-blue-700" />
             </Button>
-          </div>
-
-          <div className="text-center">
-            <div className="inline-flex items-center gap-2 bg-red-500/10 text-red-700 px-6 py-3 rounded-full">
-              <HeadphonesIcon className="h-5 w-5" />
-              <span className="font-semibold">Emergency? Call 911 immediately</span>
-            </div>
           </div>
         </section>
       </main>

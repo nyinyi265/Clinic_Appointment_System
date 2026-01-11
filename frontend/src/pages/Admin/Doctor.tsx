@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { deleteDoctorById, getAllDoctors } from "../../../services/apiSvc";
-import { Trash2 } from "lucide-react";
+import { Loader2, Trash2, Plus, Pencil } from "lucide-react";
 
 export default function Doctor() {
+  const navigate = useNavigate();
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,9 +39,26 @@ export default function Doctor() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Doctors</h1>
+      {loading && (
+      <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground">Loading doctors...</p>
+        </div>
+      </div>
+    )}
+    <div className="flex justify-between items-center mb-4">
+      <h1 className="text-2xl font-bold">Doctors</h1>
+      <button
+        onClick={() => navigate("/admin/doctors/create")}
+        className="flex items-center gap-2 px-4 py-2 bg-brandBlue text-white rounded-md hover:bg-brandBlue/90 cursor-pointer"
+      >
+        <Plus className="w-4 h-4" />
+        Create Doctor
+      </button>
+    </div>
 
-      <div className="bg-white p-4 rounded shadow">
+    <div className="bg-white p-4 rounded shadow">
         {/* Example table */}
         <table className="w-full text-left border">
           <thead>
@@ -64,10 +83,16 @@ export default function Doctor() {
                   </td>
                   <td className="border p-2">{doctor.email}</td>
                   <td className="border p-2">{doctor.phone_number}</td>
-                  <td className="border p-2">{doctor.license_number}</td>
-                  <td className="border p-2">{doctor.specialities?.join(', ') || '-'}</td>
-                  <td className="border p-2">{doctor.is_active}</td>
-                  <td className="border p-2 flex justify-center">
+                  <td className="border p-2">{doctor.profile.license_number}</td>
+                  <td className="border p-2">{doctor.specialities?.map((s: any) => s.name).join(', ') || '-'}</td>
+                  <td className="border p-2">{doctor.profile.is_active}</td>
+                  <td className="border p-2 flex gap-2 justify-center">
+                    <button
+                      className="flex items-center justify-center bg-brandBlue p-2 rounded-md text-white cursor-pointer hover:bg-brandBlue/90"
+                      onClick={() => navigate(`/admin/doctors/edit/${doctor.id}`)}
+                    >
+                      <Pencil className="inline-block w-4 h-4" />
+                    </button>
                     <button
                       className="flex items-center justify-center bg-red-600 p-2 rounded-md text-white cursor-pointer hover:bg-red-700"
                       onClick={() => deleteDoctor(doctor.id)}
@@ -77,13 +102,6 @@ export default function Doctor() {
                   </td>
                 </tr>
               ))}
-            {loading && (
-              <tr>
-                <td colSpan={8} className="border p-2 text-center">
-                  Loading Doctors...
-                </td>
-              </tr>
-            )}
 
             {doctors.length === 0 && !loading && (
               <tr>

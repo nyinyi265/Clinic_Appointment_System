@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import Navbar from '../../components/common/navbar';
-import Footer from '../../components/common/footer';
-import { getClinicById, getDoctorsByClinic } from '../../../services/apiSvc';
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Navbar from "../../components/common/navbar";
+import Footer from "../../components/common/footer";
+import { getClinicById, getDoctorsByClinic } from "../../../services/apiSvc";
+import LoadingOverlay from "@/components/common/LoadingOverlay";
 
 interface Clinic {
   id: number;
@@ -48,9 +49,9 @@ const ClinicDetail = () => {
   const [loadingDoctors, setLoadingDoctors] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
-      navigate('/login');
+      navigate("/login");
       return;
     }
     if (id) {
@@ -63,11 +64,11 @@ const ClinicDetail = () => {
     try {
       setLoadingClinic(true);
       const data = await getClinicById(parseInt(id!));
-      if (data.status === 'success') {
+      if (data.status === "success") {
         setClinic(data.data.data);
       }
     } catch (error) {
-      console.error('Error fetching clinic:', error);
+      console.error("Error fetching clinic:", error);
     } finally {
       setLoadingClinic(false);
     }
@@ -77,12 +78,12 @@ const ClinicDetail = () => {
     try {
       setLoadingDoctors(true);
       const data = await getDoctorsByClinic(parseInt(id!));
-      if (data.status === 'success') {
+      if (data.status === "success") {
         setDoctors(data.data.data);
         console.log(data.data.data);
       }
     } catch (error) {
-      console.error('Error fetching doctors:', error);
+      console.error("Error fetching doctors:", error);
     } finally {
       setLoadingDoctors(false);
     }
@@ -90,13 +91,7 @@ const ClinicDetail = () => {
 
   if (loadingClinic) {
     return (
-      <div className="min-h-screen bg-background text-foreground">
-        <Navbar role="patient" />
-        <main className="container mx-auto py-8 px-4">
-          <p>Loading clinic details...</p>
-        </main>
-        <Footer />
-      </div>
+      loadingClinic && <LoadingOverlay message="Loading clinic details..." />
     );
   }
 
@@ -117,7 +112,7 @@ const ClinicDetail = () => {
       <Navbar role="patient" />
       <main className="container mx-auto py-8 px-4">
         <div className="mb-6">
-          <Button variant="outline" onClick={() => navigate('/clinic')}>
+          <Button variant="outline" onClick={() => navigate("/clinic")}>
             ← Back to Clinics
           </Button>
         </div>
@@ -143,11 +138,17 @@ const ClinicDetail = () => {
             {doctors.map((doctorClinic) => (
               <Card key={doctorClinic.id}>
                 <CardHeader>
-                  <CardTitle>{doctorClinic.doctor.first_name} {doctorClinic.doctor.last_name}</CardTitle>
+                  <CardTitle>
+                    {doctorClinic.doctor.first_name}{" "}
+                    {doctorClinic.doctor.last_name}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground mb-2">
-                    Specialities: {doctorClinic.doctor.specialities.map(s => s.name).join(', ')}
+                    Specialities:{" "}
+                    {doctorClinic.doctor.specialities
+                      .map((s) => s.name)
+                      .join(", ")}
                   </p>
                 </CardContent>
               </Card>

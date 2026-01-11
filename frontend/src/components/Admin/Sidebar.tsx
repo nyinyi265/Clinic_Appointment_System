@@ -7,6 +7,7 @@ import {
   LogOut,
   Building2,
   Heart,
+  MessageSquare,
 } from "lucide-react";
 import {
   Sidebar,
@@ -53,6 +54,11 @@ const items = [
     url: "/admin/clinics",
     icon: Building2,
   },
+  {
+    title: "Messages",
+    url: "/admin/messages",
+    icon: MessageSquare,
+  },
 ];
 
 export function AdminSidebar() {
@@ -70,10 +76,10 @@ export function AdminSidebar() {
     <Sidebar collapsible="icon" className="w-[16rem]">
       <SidebarHeader>
         <div className="flex items-center gap-2 px-2 py-4">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brandBlue">
             <Stethoscope className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="text-xl font-bold text-blue-600">Care Point</span>
+          <span className="text-xl font-bold text-brandBlue">Care Point</span>
         </div>
       </SidebarHeader>
       <SidebarContent>

@@ -134,7 +134,7 @@ export default function SpecialityForm() {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2 bg-brandBlue text-white rounded-md hover:bg-brandBlue/90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {loading
                 ? isEditMode
@@ -147,7 +147,7 @@ export default function SpecialityForm() {
             <button
               type="button"
               onClick={() => navigate("/admin/specialities")}
-              className="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+              className="px-6 py-2 border-2 border-gray-600 text-black rounded-md hover:bg-gray-700 hover:text-white cursor-pointer"
             >
               Cancel
             </button>

@@ -290,7 +290,7 @@ const PatientProfile = () => {
               <Button
                 type="submit"
                 disabled={saving}
-                className="w-full bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
+                className="w-full bg-brandBlue text-white hover:bg-brandBlue/90 cursor-pointer"
               >
                 {saving ? "Saving..." : "Save Changes"}
               </Button>

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { deleteSpecialityById, getAllSpecialities } from "../../../services/apiSvc";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function Speciality() {
@@ -39,11 +39,19 @@ export default function Speciality() {
 
   return (
     <div>
+      {loading && (
+      <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground">Loading specialities...</p>
+        </div>
+      </div>
+    )}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Specialities</h1>
         <button
           onClick={() => navigate("/admin/speciality/create")}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          className="flex items-center gap-2 px-4 py-2 bg-brandBlue text-white rounded-md hover:bg-brandBlue/90 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           Create Speciality
@@ -72,7 +80,7 @@ export default function Speciality() {
                   <td className="border p-2">{speciality.description}</td>
                   <td className="border p-2 flex gap-2 justify-center">
                     <button
-                      className="flex items-center justify-center bg-blue-600 p-2 rounded-md text-white cursor-pointer hover:bg-blue-700"
+                      className="flex items-center justify-center bg-brandBlue p-2 rounded-md text-white cursor-pointer hover:bg-brandBlue/90"
                       onClick={() =>
                         navigate(`/admin/speciality/edit/${speciality.id}`)
                       }
@@ -88,14 +96,6 @@ export default function Speciality() {
                   </td>
                 </tr>
               ))}
-
-            {loading && (
-              <tr>
-                <td className="text-center p-2" colSpan={4}>
-                  Loading Specialities...
-                </td>
-              </tr>
-            )}
 
             {specialities.length === 0 && !loading && (
               <tr>

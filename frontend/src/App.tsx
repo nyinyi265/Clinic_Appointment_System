@@ -9,8 +9,10 @@ import Doctor from "./pages/Admin/Doctor";
 import Appointment from "./pages/Admin/Appointment";
 import Clinic from "./pages/Admin/Clinic";
 import ClinicForm from "./pages/Admin/ClinicForm";
+import DoctorForm from "./pages/Admin/DoctorForm";
 import Speciality from "./pages/Admin/Speciality";
 import SpecialityForm from "./pages/Admin/SpecialityForm";
+import Messages from "./pages/Admin/Messages";
 import PatientClinic from "./pages/Patient/Clinic";
 import PatientDoctor from "./pages/Patient/Doctor";
 import PatientAppointment from "./pages/Patient/Appointment";
@@ -44,6 +46,14 @@ function App() {
         element={<AdminLayout children={<Doctor />} />}
       />
       <Route
+        path="/admin/doctors/create"
+        element={<AdminLayout children={<DoctorForm />} />}
+      />
+      <Route
+        path="/admin/doctors/edit/:id"
+        element={<AdminLayout children={<DoctorForm />} />}
+      />
+      <Route
         path="/admin/specialities"
         element={<AdminLayout children={<Speciality />} />}
       />
@@ -70,6 +80,10 @@ function App() {
       <Route
         path="/admin/speciality/edit/:id"
         element={<AdminLayout children={<SpecialityForm />} />}
+      />
+      <Route
+        path="/admin/messages"
+        element={<AdminLayout children={<Messages />} />}
       />
       <Route path="/clinic" element={<PatientClinic />} />
       <Route path="/clinic/:id" element={<ClinicDetail />} />

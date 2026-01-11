@@ -339,28 +339,41 @@ export interface Patient {
   gender: string;
 }
 
-export const getAllClinicsForDoctor = async (doctorId: number): Promise<Clinic[]> => {
+export const getAllClinicsForDoctor = async (
+  doctorId: number
+): Promise<Clinic[]> => {
   const response = await api.get(`/v1/doctor/${doctorId}/all-clinics`);
   console.log(response);
   return response.data.data.data;
 };
 
-export const getDoctorClinics = async (doctorId: number): Promise<DoctorClinic[]> => {
+export const getDoctorClinics = async (
+  doctorId: number
+): Promise<DoctorClinic[]> => {
   const response = await api.get(`/v1/doctor/${doctorId}/clinics`);
   return response.data.data.data;
 };
 
-export const getDoctorAppointments = async (doctorId: number): Promise<Appointment[]> => {
+export const getDoctorAppointments = async (
+  doctorId: number
+): Promise<Appointment[]> => {
   const response = await api.get(`/v1/doctor/${doctorId}/appointments`);
   return response.data.data.data;
 };
 
-export const updateAppointmentStatus = async (appointmentId: number, status: string): Promise<void> => {
+export const updateAppointmentStatus = async (
+  appointmentId: number,
+  status: string
+): Promise<void> => {
   await api.put(`/v1/appointment/${appointmentId}`, { status });
 };
 
-export const requestClinicAssignment = async (clinicId: number, doctorId: number, role: string) => {
-  const response = await api.post('/v1/doctor-clinic', {
+export const requestClinicAssignment = async (
+  clinicId: number,
+  doctorId: number,
+  role: string
+) => {
+  const response = await api.post("/v1/doctor-clinic", {
     clinic_id: clinicId,
     doctor_profile_id: doctorId,
     role: role,
@@ -370,6 +383,64 @@ export const requestClinicAssignment = async (clinicId: number, doctorId: number
 };
 
 export const getPendingClinicRequests = async () => {
-  const response = await api.get('/v1/pending-clinic-requests');
+  const response = await api.get("/v1/pending-clinic-requests");
+  return response.data;
+};
+
+export const getAllMessages = async () => {
+  const response = await api.get("/v1/messages", {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
+  return response.data;
+};
+
+export const sendMessage = async (messageData: {
+  first_name: string;
+  last_name: string;
+  email: string;
+  subject: string;
+  message: string;
+}) => {
+  const response = await api.post("/contact-message", messageData);
+  return response.data;
+};
+
+export const createDoctor = async (doctorData: {
+  first_name: string;
+  last_name: string;
+  phone_number: string;
+  email: string;
+  password: string;
+  license_number: string;
+  is_active: boolean;
+  specialities?: number[];
+}) => {
+  const response = await api.post("/v1/doctor", doctorData, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
+  return response.data;
+};
+
+export const updateDoctor = async (
+  id: number,
+  doctorData: {
+    first_name?: string;
+    last_name?: string;
+    phone_number?: string;
+    email?: string;
+    password?: string;
+    license_number?: string;
+    is_active?: boolean;
+  }
+) => {
+  const response = await api.put(`/v1/doctor/${id}`, doctorData, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
   return response.data;
 };

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { deleteClinicById, getAllClinics } from "../../../services/apiSvc";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Pencil, Trash2, Plus, Loader2 } from "lucide-react";
 
 export default function Clinic() {
   const navigate = useNavigate();
@@ -38,11 +38,19 @@ export default function Clinic() {
   };
   return (
     <div>
+      {loading && (
+      <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground">Loading clinics...</p>
+        </div>
+      </div>
+    )}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Clinics</h1>
         <button
           onClick={() => navigate("/admin/clinics/create")}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          className="flex items-center gap-2 px-4 py-2 bg-brandBlue text-white rounded-md hover:bg-brandBlue/90 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           Create Clinic
@@ -72,7 +80,7 @@ export default function Clinic() {
                   <td className="border p-2"> {clinic.phone_number} </td>
                   <td className="border p-2 flex gap-2 justify-center">
                     <button
-                      className="flex items-center justify-center bg-blue-600 p-2 rounded-md text-white cursor-pointer hover:bg-blue-700"
+                      className="flex items-center justify-center bg-brandBlue p-2 rounded-md text-white cursor-pointer hover:bg-brandBlue/90"
                       onClick={() => navigate(`/admin/clinics/edit/${clinic.id}`)}
                     >
                       <Pencil className="inline-block w-4 h-4" />
@@ -86,14 +94,6 @@ export default function Clinic() {
                   </td>
                 </tr>
               ))}
-
-            {loading && (
-              <tr>
-                <td colSpan={5} className="border p-2 text-center">
-                  Loading Clinics...
-                </td>
-              </tr>
-            )}
 
             {clinics.length === 0 && !loading && (
               <tr>
