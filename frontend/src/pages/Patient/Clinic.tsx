@@ -53,7 +53,7 @@ const Clinic = () => {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar role="patient" />
 
-      <main className="container mx-auto py-10 px-4 space-y-8 bg-gradient-to-b from-background to-muted/20 min-h-[calc(100vh-200px)]">
+      <main className="container mx-auto py-8 px-4 space-y-8 bg-gradient-to-b from-background to-muted/20 min-h-[calc(100vh-200px)] mt-1">
         {/* Header */}
         <section className="space-y-1">
           <h1 className="text-3xl font-bold tracking-tight">Find Clinics</h1>

@@ -1,7 +1,8 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import Navbar from '../components/common/navbar';
-import Footer from '../components/common/footer';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Navbar from "../components/common/navbar";
+import Footer from "../components/common/footer";
+import { useNavigate } from "react-router-dom";
 import {
   Calendar,
   Users,
@@ -14,15 +15,25 @@ import {
   Stethoscope,
   Award,
   Zap,
-} from 'lucide-react';
+} from "lucide-react";
 
 const Home = () => {
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-brandBlue/10 via-background to-muted/30 py-20 md:py-32 px-4 overflow-hidden">
+      <section
+        className="relative py-20 md:py-32 px-4 overflow-hidden"
+        style={{
+          backgroundImage: "url(/images/hero-image.jpg)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="absolute inset-0 bg-black/20 backdrop-blur-sm"></div>
         <div className="container mx-auto text-center space-y-8 relative z-10">
           <div className="inline-flex items-center gap-2 bg-brandBlue/10 text-brandBlue px-4 py-2 rounded-full text-sm font-medium">
             <Stethoscope className="h-4 w-4" />
@@ -30,20 +41,44 @@ const Home = () => {
           </div>
 
           <h1 className="text-4xl md:text-7xl font-bold tracking-tight bg-gradient-to-r from-brandBlue via-primary to-emerald-600 bg-clip-text text-transparent leading-tight">
-            Your Health,<br />Our Priority
+            Your Health,
+            <br />
+            Our Priority
           </h1>
 
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-            Experience healthcare booking reimagined. Connect with top doctors, schedule appointments effortlessly,
-            and take control of your health journey with Care Point.
+          <p className="bg-black/30 p-4 text-xl md:text-2xl text-white max-w-4xl mx-auto leading-relaxed rounded-lg">
+            Experience healthcare booking reimagined. Connect with top doctors,
+            schedule appointments effortlessly, and take control of your health
+            journey with Care Point.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
-            <Button size="lg" className="bg-brandBlue hover:bg-brandBlue/90 text-white shadow-xl px-8 py-4 text-lg">
+            <Button
+              size="lg"
+              className="bg-brandBlue hover:bg-brandBlue/90 text-white shadow-xl px-8 py-4 text-lg cursor-pointer"
+              onClick={() => {
+                if (token) {
+                  navigate("/appointment");
+                } else {
+                  navigate("/login");
+                }
+              }}
+            >
               Book Appointment Now
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-            <Button size="lg" variant="outline" className="shadow-xl px-8 py-4 text-lg border-2">
+            <Button
+              size="lg"
+              variant="outline"
+              className="shadow-xl px-8 py-4 text-lg border-2 cursor-pointer"
+              onClick={() => {
+                if (token) {
+                  navigate("/doctor");
+                } else {
+                  navigate("/login");
+                }
+              }}
+            >
               Find a Doctor
             </Button>
           </div>
@@ -52,15 +87,15 @@ const Home = () => {
           <div className="flex flex-wrap justify-center items-center gap-8 pt-12 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-green-500" />
-              <span>Verified Doctors</span>
+              <span className="text-white">Verified Doctors</span>
             </div>
             <div className="flex items-center gap-2">
               <Shield className="h-4 w-4 text-blue-500" />
-              <span>Secure & Private</span>
+              <span className="text-white">Secure & Private</span>
             </div>
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-purple-500" />
-              <span>24/7 Support</span>
+              <span className="text-white">24/7 Support</span>
             </div>
           </div>
         </div>
@@ -73,9 +108,12 @@ const Home = () => {
       <section className="py-20 px-4 bg-gradient-to-b from-background to-muted/20">
         <div className="container mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose Care Point?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Why Choose Care Point?
+            </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Discover the features that make healthcare booking simple, secure, and efficient
+              Discover the features that make healthcare booking simple, secure,
+              and efficient
             </p>
           </div>
 
@@ -85,12 +123,14 @@ const Home = () => {
                 <div className="mx-auto w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mb-4">
                   <Calendar className="h-8 w-8 text-blue-600" />
                 </div>
-                <CardTitle className="text-xl text-blue-900">Easy Scheduling</CardTitle>
+                <CardTitle className="text-xl text-blue-900">
+                  Easy Scheduling
+                </CardTitle>
               </CardHeader>
               <CardContent className="text-center">
                 <p className="text-muted-foreground">
-                  Book appointments with your preferred doctors in just a few clicks.
-                  Real-time availability and instant confirmation.
+                  Book appointments with your preferred doctors in just a few
+                  clicks. Real-time availability and instant confirmation.
                 </p>
               </CardContent>
             </Card>
@@ -100,12 +140,14 @@ const Home = () => {
                 <div className="mx-auto w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mb-4">
                   <Users className="h-8 w-8 text-emerald-600" />
                 </div>
-                <CardTitle className="text-xl text-emerald-900">Expert Doctors</CardTitle>
+                <CardTitle className="text-xl text-emerald-900">
+                  Expert Doctors
+                </CardTitle>
               </CardHeader>
               <CardContent className="text-center">
                 <p className="text-muted-foreground">
-                  Access a network of verified, experienced healthcare professionals
-                  across all medical specialties.
+                  Access a network of verified, experienced healthcare
+                  professionals across all medical specialties.
                 </p>
               </CardContent>
             </Card>
@@ -115,12 +157,14 @@ const Home = () => {
                 <div className="mx-auto w-16 h-16 bg-purple-500/10 rounded-full flex items-center justify-center mb-4">
                   <Shield className="h-8 w-8 text-purple-600" />
                 </div>
-                <CardTitle className="text-xl text-purple-900">Secure & Private</CardTitle>
+                <CardTitle className="text-xl text-purple-900">
+                  Secure & Private
+                </CardTitle>
               </CardHeader>
               <CardContent className="text-center">
                 <p className="text-muted-foreground">
-                  Your health information is protected with enterprise-grade security
-                  and HIPAA-compliant privacy standards.
+                  Your health information is protected with enterprise-grade
+                  security and HIPAA-compliant privacy standards.
                 </p>
               </CardContent>
             </Card>
@@ -130,7 +174,9 @@ const Home = () => {
                 <div className="mx-auto w-16 h-16 bg-orange-500/10 rounded-full flex items-center justify-center mb-4">
                   <Clock className="h-8 w-8 text-orange-600" />
                 </div>
-                <CardTitle className="text-xl text-orange-900">24/7 Support</CardTitle>
+                <CardTitle className="text-xl text-orange-900">
+                  24/7 Support
+                </CardTitle>
               </CardHeader>
               <CardContent className="text-center">
                 <p className="text-muted-foreground">
@@ -145,12 +191,14 @@ const Home = () => {
                 <div className="mx-auto w-16 h-16 bg-pink-500/10 rounded-full flex items-center justify-center mb-4">
                   <Heart className="h-8 w-8 text-pink-600" />
                 </div>
-                <CardTitle className="text-xl text-pink-900">Patient-Centric</CardTitle>
+                <CardTitle className="text-xl text-pink-900">
+                  Patient-Centric
+                </CardTitle>
               </CardHeader>
               <CardContent className="text-center">
                 <p className="text-muted-foreground">
-                  Designed with patients in mind - intuitive interface, personalized
-                  care recommendations, and compassionate support.
+                  Designed with patients in mind - intuitive interface,
+                  personalized care recommendations, and compassionate support.
                 </p>
               </CardContent>
             </Card>
@@ -160,7 +208,9 @@ const Home = () => {
                 <div className="mx-auto w-16 h-16 bg-indigo-500/10 rounded-full flex items-center justify-center mb-4">
                   <Zap className="h-8 w-8 text-indigo-600" />
                 </div>
-                <CardTitle className="text-xl text-indigo-900">Instant Access</CardTitle>
+                <CardTitle className="text-xl text-indigo-900">
+                  Instant Access
+                </CardTitle>
               </CardHeader>
               <CardContent className="text-center">
                 <p className="text-muted-foreground">
@@ -178,8 +228,12 @@ const Home = () => {
         <div className="container mx-auto">
           <div className="bg-gradient-to-r from-brandBlue to-primary rounded-3xl p-8 md:p-12 text-white">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Trusted by Thousands</h2>
-              <p className="text-xl opacity-90">Join our growing community of satisfied patients and doctors</p>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Trusted by Thousands
+              </h2>
+              <p className="text-xl opacity-90">
+                Join our growing community of satisfied patients and doctors
+              </p>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -208,9 +262,12 @@ const Home = () => {
       <section className="py-20 px-4 bg-muted/30">
         <div className="container mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">How It Works</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              How It Works
+            </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Getting healthcare has never been easier. Follow these simple steps to book your appointment.
+              Getting healthcare has never been easier. Follow these simple
+              steps to book your appointment.
             </p>
           </div>
 
@@ -221,7 +278,8 @@ const Home = () => {
               </div>
               <h3 className="text-xl font-semibold">Create Account</h3>
               <p className="text-muted-foreground">
-                Sign up in seconds and create your personal health profile with secure authentication.
+                Sign up in seconds and create your personal health profile with
+                secure authentication.
               </p>
             </div>
 
@@ -231,7 +289,8 @@ const Home = () => {
               </div>
               <h3 className="text-xl font-semibold">Find & Book</h3>
               <p className="text-muted-foreground">
-                Browse verified doctors, check availability, and book appointments that fit your schedule.
+                Browse verified doctors, check availability, and book
+                appointments that fit your schedule.
               </p>
             </div>
 
@@ -241,7 +300,8 @@ const Home = () => {
               </div>
               <h3 className="text-xl font-semibold">Get Care</h3>
               <p className="text-muted-foreground">
-                Attend your appointment, receive quality care, and manage your health records digitally.
+                Attend your appointment, receive quality care, and manage your
+                health records digitally.
               </p>
             </div>
           </div>
@@ -252,8 +312,12 @@ const Home = () => {
       <section className="py-20 px-4">
         <div className="container mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">What Our Patients Say</h2>
-            <p className="text-xl text-muted-foreground">Real experiences from real patients</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              What Our Patients Say
+            </h2>
+            <p className="text-xl text-muted-foreground">
+              Real experiences from real patients
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -261,16 +325,22 @@ const Home = () => {
               <CardContent className="pt-6">
                 <div className="flex mb-4">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                    <Star
+                      key={i}
+                      className="h-5 w-5 text-yellow-400 fill-current"
+                    />
                   ))}
                 </div>
                 <p className="text-muted-foreground mb-4 italic">
-                  "Care Point made booking my doctor's appointment so simple. The interface is intuitive
-                  and I received confirmation instantly. Highly recommend!"
+                  "Care Point made booking my doctor's appointment so simple.
+                  The interface is intuitive and I received confirmation
+                  instantly. Highly recommend!"
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-brandBlue/10 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-semibold text-brandBlue">SM</span>
+                    <span className="text-sm font-semibold text-brandBlue">
+                      SM
+                    </span>
                   </div>
                   <div>
                     <div className="font-semibold">Sarah Mitchell</div>
@@ -284,20 +354,28 @@ const Home = () => {
               <CardContent className="pt-6">
                 <div className="flex mb-4">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                    <Star
+                      key={i}
+                      className="h-5 w-5 text-yellow-400 fill-current"
+                    />
                   ))}
                 </div>
                 <p className="text-muted-foreground mb-4 italic">
-                  "As a busy professional, finding time for doctor visits was challenging.
-                  Care Point solved this perfectly with their easy scheduling system."
+                  "As a busy professional, finding time for doctor visits was
+                  challenging. Care Point solved this perfectly with their easy
+                  scheduling system."
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-emerald-500/10 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-semibold text-emerald-600">JD</span>
+                    <span className="text-sm font-semibold text-emerald-600">
+                      JD
+                    </span>
                   </div>
                   <div>
                     <div className="font-semibold">James Davis</div>
-                    <div className="text-sm text-muted-foreground">Business Executive</div>
+                    <div className="text-sm text-muted-foreground">
+                      Business Executive
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -307,15 +385,20 @@ const Home = () => {
               <CardContent className="pt-6">
                 <div className="flex items-center gap-3 mb-4">
                   <Award className="h-5 w-5 text-brandBlue" />
-                  <span className="text-sm font-medium text-brandBlue">Verified Review</span>
+                  <span className="text-sm font-medium text-brandBlue">
+                    Verified Review
+                  </span>
                 </div>
                 <p className="text-muted-foreground mb-4 italic">
-                  "The doctors on Care Point are all verified and professional. I felt confident
-                  knowing I was getting quality healthcare through their platform."
+                  "The doctors on Care Point are all verified and professional.
+                  I felt confident knowing I was getting quality healthcare
+                  through their platform."
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-purple-500/10 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-semibold text-purple-600">MR</span>
+                    <span className="text-sm font-semibold text-purple-600">
+                      MR
+                    </span>
                   </div>
                   <div>
                     <div className="font-semibold">Maria Rodriguez</div>
@@ -331,17 +414,27 @@ const Home = () => {
       {/* Final CTA */}
       <section className="py-20 px-4 bg-gradient-to-r from-brandBlue via-primary to-emerald-600">
         <div className="container mx-auto text-center text-white">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Transform Your Healthcare Experience?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Ready to Transform Your Healthcare Experience?
+          </h2>
           <p className="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
-            Join thousands of patients who have already discovered the convenience of Care Point.
-            Your health journey starts here.
+            Join thousands of patients who have already discovered the
+            convenience of Care Point. Your health journey starts here.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="secondary" className="shadow-xl px-8 py-4 text-lg">
+            <Button
+              size="lg"
+              variant="secondary"
+              className="shadow-xl px-8 py-4 text-lg"
+            >
               Start Your Journey
               <Heart className="ml-2 h-5 w-5" />
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-brandBlue shadow-xl px-8 py-4 text-lg">
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-white text-white hover:bg-white hover:text-brandBlue shadow-xl px-8 py-4 text-lg"
+            >
               Contact Support
             </Button>
           </div>

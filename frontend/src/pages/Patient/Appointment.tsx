@@ -215,7 +215,7 @@ const Appointment = () => {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar role="patient" />
 
-      <main className="container mx-auto py-10 px-4 space-y-8 bg-gradient-to-b from-background to-muted/20 min-h-[calc(100vh-200px)]">
+      <main className="container mx-auto py-8 px-4 space-y-8 bg-gradient-to-b from-background to-muted/20 min-h-[calc(100vh-200px)] mt-1">
         {/* Header */}
         <section className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-1">

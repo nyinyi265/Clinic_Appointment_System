@@ -290,3 +290,86 @@ export const getPatientsByDoctorId = async (id: number) => {
   });
   return response.data;
 };
+export interface Clinic {
+  id: number;
+  name: string;
+  address: string;
+  phone_number: string;
+  is_related: boolean;
+  is_requested: boolean;
+  is_active: boolean | null;
+}
+
+export interface Appointment {
+  id: number;
+  appointment_date: string;
+  start_time: string;
+  end_time: string;
+  status: string;
+  notes: string;
+  patient: {
+    id: number;
+    user: {
+      first_name: string;
+      last_name: string;
+    };
+  };
+  clinic: {
+    name: string;
+  };
+}
+
+export interface DoctorClinic {
+  id: number;
+  clinic: {
+    name: string;
+    address: string;
+  };
+  role: string;
+  is_active: boolean;
+}
+
+export interface Patient {
+  id: number;
+  user: {
+    first_name: string;
+    last_name: string;
+  };
+  age: number;
+  gender: string;
+}
+
+export const getAllClinicsForDoctor = async (doctorId: number): Promise<Clinic[]> => {
+  const response = await api.get(`/v1/doctor/${doctorId}/all-clinics`);
+  console.log(response);
+  return response.data.data.data;
+};
+
+export const getDoctorClinics = async (doctorId: number): Promise<DoctorClinic[]> => {
+  const response = await api.get(`/v1/doctor/${doctorId}/clinics`);
+  return response.data.data.data;
+};
+
+export const getDoctorAppointments = async (doctorId: number): Promise<Appointment[]> => {
+  const response = await api.get(`/v1/doctor/${doctorId}/appointments`);
+  return response.data.data.data;
+};
+
+export const updateAppointmentStatus = async (appointmentId: number, status: string): Promise<void> => {
+  await api.put(`/v1/appointment/${appointmentId}`, { status });
+};
+
+export const requestClinicAssignment = async (clinicId: number, doctorId: number, role: string) => {
+  const response = await api.post('/v1/doctor-clinic', {
+    clinic_id: clinicId,
+    doctor_profile_id: doctorId,
+    role: role,
+    is_active: false, // pending
+  });
+  return response.data;
+};
+
+export const getPendingClinicRequests = async () => {
+  const response = await api.get('/v1/pending-clinic-requests');
+  return response.data;
+};

@@ -17,45 +17,8 @@ import {
   MapPin,
   Stethoscope
 } from 'lucide-react';
+import { getAppointmentByDoctorId, getClinicsByDoctor, getPatientsByDoctorId, updateAppointmentStatusByDoctor, type Appointment, type DoctorClinic, type Patient } from '../../../services/apiSvc';
 
-interface Appointment {
-  id: number;
-  appointment_date: string;
-  start_time: string;
-  end_time: string;
-  status: string;
-  notes: string;
-  patient: {
-    id: number;
-    user: {
-      first_name: string;
-      last_name: string;
-    };
-  };
-  clinic: {
-    name: string;
-  };
-}
-
-interface Patient {
-  id: number;
-  user: {
-    first_name: string;
-    last_name: string;
-  };
-  age: number;
-  gender: string;
-}
-
-interface DoctorClinic {
-  id: number;
-  clinic: {
-    name: string;
-    address: string;
-  };
-  role: string;
-  is_active: boolean;
-}
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -63,6 +26,7 @@ const Dashboard = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [doctorClinics, setDoctorClinics] = useState<DoctorClinic[]>([]);
   const [loading, setLoading] = useState(true);
+  console.log('Clinics :', doctorClinics);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -75,46 +39,19 @@ const Dashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const userId = JSON.parse(localStorage.getItem('user') || '{}').id;
-
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const userId = user.data.profile.id;
       // Fetch appointments
-      const appointmentsResponse = await fetch(`/api/v1/doctor/${userId}/appointments`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      if (appointmentsResponse.ok) {
-        const appointmentsData = await appointmentsResponse.json();
-        setAppointments(appointmentsData.data.data);
-      }
+      const appointmentsData = await getAppointmentByDoctorId(userId);
+      setAppointments(appointmentsData.data.data);
 
-      // Fetch patients (this might need a new endpoint)
-      // For now, we'll get unique patients from appointments
-      const uniquePatients = appointments.reduce((acc: Patient[], appointment) => {
-        const patient = appointment.patient;
-        if (!acc.find(p => p.id === patient.id)) {
-          acc.push({
-            id: patient.id,
-            user: patient.user,
-            age: 0, // Would need to fetch from patient profile
-            gender: 'Unknown'
-          });
-        }
-        return acc;
-      }, []);
-      setPatients(uniquePatients);
+      // Fetch patients
+      const patientsData = await getPatientsByDoctorId(userId);
+      setPatients(patientsData.data.data);
 
       // Fetch doctor clinics
-      const clinicsResponse = await fetch(`/api/v1/doctor/${userId}/clinics`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      if (clinicsResponse.ok) {
-        const clinicsData = await clinicsResponse.json();
-        setDoctorClinics(clinicsData.data.data);
-      }
+      const clinicsData = await getClinicsByDoctor(userId);
+      setDoctorClinics(clinicsData.data.data);
 
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -125,18 +62,8 @@ const Dashboard = () => {
 
   const updateAppointmentStatus = async (appointmentId: number, status: string) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/appointment/${appointmentId}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status }),
-      });
-      if (response.ok) {
-        fetchDashboardData(); // Refresh data
-      }
+      await updateAppointmentStatusByDoctor(appointmentId, status);
+      fetchDashboardData(); // Refresh data
     } catch (error) {
       console.error('Error updating appointment status:', error);
     }
@@ -368,8 +295,7 @@ const Dashboard = () => {
                         <Building2 className="h-5 w-5 text-purple-600" />
                       </div>
                       <Badge
-                        variant={doctorClinic.is_active ? "default" : "secondary"}
-                        className="text-xs"
+                        className="text-xs bg-blue-100 text-blue-700 border-blue-500 hover:bg-blue-100"
                       >
                         {doctorClinic.is_active ? "Active" : "Inactive"}
                       </Badge>
@@ -378,9 +304,6 @@ const Dashboard = () => {
                       <h4 className="font-medium text-sm">{doctorClinic.clinic.name}</h4>
                       <p className="text-xs text-muted-foreground line-clamp-2">
                         {doctorClinic.clinic.address}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Role: {doctorClinic.role}
                       </p>
                     </div>
                   </div>

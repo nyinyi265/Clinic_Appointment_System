@@ -52,7 +52,7 @@ const Navbar: React.FC<NavbarProps> = ({ role }) => {
   };
 
   return (
-    <nav className="flex items-center justify-between py-4 px-16 bg-white shadow-md mb-5">
+    <nav className="flex items-center justify-between py-4 px-16 bg-white shadow-md">
       <div className="flex gap-2 items-center text-brandBlue font-bold text-lg">
         <div className="bg-brandBlue rounded-xl p-2">
           <Stethoscope className="h-6 w-6 text-white font-bold" />
@@ -130,13 +130,13 @@ const Navbar: React.FC<NavbarProps> = ({ role }) => {
         ) : (
           <>
             <button
-              className="text-gray-700 hover:text-white mr-4 border-2 border-blue-600 rounded-lg px-4 py-2 hover:bg-blue-600 cursor-pointer"
+              className="text-gray-700 hover:text-white mr-4 border-2 border-gray-600 rounded-lg px-4 py-2 hover:bg-brandBlue cursor-pointer"
               onClick={() => navigate("/login")}
             >
-              Login
+              Sign In
             </button>
             <button
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
+              className="bg-brandBlue text-white px-4 py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
               onClick={() => navigate("/register")}
             >
               Sign Up

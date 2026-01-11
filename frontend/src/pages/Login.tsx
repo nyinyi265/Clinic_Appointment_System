@@ -58,7 +58,7 @@ const Login: React.FC = () => {
   return (
     <div className="min-h-screen flex">
       {/* Left side - Image/Branding */}
-      <div className="flex-[1/2] bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center p-8 lg:p-12">
+      <div className="flex-[1/2] bg-brandBlue flex items-center justify-center p-8 lg:p-12">
         <div className="text-center text-white">
           <div className="mb-8">
             <Stethoscope className="mx-auto h-16 w-16 lg:h-24 lg:w-24 text-white" />
@@ -138,9 +138,8 @@ const Login: React.FC = () => {
             <div>
               <Button
                 type="submit"
-                variant="primary"
                 size="lg"
-                className="w-full cursor-pointer"
+                className="w-full cursor-pointer bg-brandBlue hover:bg-brandBlue/90 text-white"
               >
                 Sign in
               </Button>
