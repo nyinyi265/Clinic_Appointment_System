@@ -26,6 +26,8 @@ Route::prefix('auth')->group(function () {
     // })->name('login');
 });
 
+Route::post('/messages', [\App\Http\Controllers\Message\MessageController::class, 'store']);
+
 Route::prefix('v1')->group(function () {
     Route::middleware(['auth:sanctum', 'role:patient|doctor|admin,sanctum'])->group(function () {
         Route::get('/all-clinics', [\App\Http\Controllers\Clinic\ClinicController::class, 'getAllClinics']);
@@ -35,16 +37,17 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware(['auth:sanctum', 'role:patient|admin,sanctum'])->group(function () {
         Route::get('/all-doctors', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'getAllDoctors']);
-
+        Route::get('/doctor/{doctor_id}', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'getDoctorById']);
         Route::post('/appointment', [\App\Http\Controllers\Appointment\AppointmentController::class, 'createAppointment']);
     });
 
     Route::middleware(['auth:sanctum', 'role:doctor|admin,sanctum'])->group(function () {
         Route::post('/doctor-clinic', [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'createDoctorClinic']);
+        Route::put('/doctor/{doctor_id}', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'updateDoctor']);
     });
 
     Route::middleware(['auth:sanctum', 'role:doctor|patient,sanctum'])->group(function () {
-        Route::get('/doctor/{doctor_id}/clinics', [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'getClinicsByDoctor']);
+        Route::get('/doctor/{doctor_id}/clinics', action: [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'getClinicsByDoctor']);
     });
 
     Route::middleware(['auth:sanctum', 'role:patient,sanctum'])->group(function () {
@@ -56,7 +59,6 @@ Route::prefix('v1')->group(function () {
         // Route::put('/appointment/{id}', [\App\Http\Controllers\Appointment\AppointmentController::class, 'updateAppointment']);
         Route::put('/patient/appointment/{id}/status', [\App\Http\Controllers\Appointment\AppointmentController::class, 'updateAppointmentStatusForPatient']);
 
-        Route::get('/doctor/{doctor_id}', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'getDoctorById']);
 
 
         Route::get('/all-doctor-clinics', [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'getAllDoctorClinics']);
@@ -71,7 +73,6 @@ Route::prefix('v1')->group(function () {
         // Route::get('/appointment/{id}', [\App\Http\Controllers\Appointment\AppointmentController::class, 'getAppointmentById']);
         Route::get('/doctor/{doctor_id}/appointments', [\App\Http\Controllers\Appointment\AppointmentController::class, 'getAppointmentsByDoctor']);
         Route::get('/doctor/{doctor_id}/patients', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'getPatientsByDoctor']);
-        Route::put('/doctor/{doctor_id}', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'updateDoctor']);
         Route::put('/doctor-clinic/{id}', [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'updateDoctorClinic']);
         Route::get('/doctor/{doctor_id}/all-clinics', [\App\Http\Controllers\Clinic\ClinicController::class, 'getAllClinicsForDoctor']);
 
@@ -93,8 +94,8 @@ Route::prefix('v1')->group(function () {
         Route::put('/clinic/{clinic_id}', [\App\Http\Controllers\Clinic\ClinicController::class, 'updateClinic']);
         Route::delete('/clinic/{clinic_id}', [\App\Http\Controllers\Clinic\ClinicController::class, 'deleteClinic']);
 
+        Route::post('/doctor', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'registerDoctor']);
         Route::delete('/doctor/{doctor_id}', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'deleteDoctor']);
-
 
         Route::put('/doctor-clinic/{id}', [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'updateDoctorClinic']);
         Route::delete('/doctor-clinic/{id}', [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'deleteDoctorClinic']);
@@ -119,5 +120,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/clinic/{clinic_id}/appointments', [\App\Http\Controllers\Appointment\AppointmentController::class, 'getAppointmentsByClinic']);
         Route::get('/appointments/date/{date}', [\App\Http\Controllers\Appointment\AppointmentController::class, 'getAppointmentsByDate']);
         Route::get('/appointments/status/{status}', [\App\Http\Controllers\Appointment\AppointmentController::class, 'getAppointmentsByStatus']);
+
+        Route::get('/messages', [\App\Http\Controllers\Message\MessageController::class, 'index']);
     });
 });

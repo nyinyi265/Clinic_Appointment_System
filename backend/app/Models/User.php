@@ -58,4 +58,8 @@ class User extends Authenticatable
     {
         return $this->hasOne(DoctorProfile::class);
     }
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
+    }
 }

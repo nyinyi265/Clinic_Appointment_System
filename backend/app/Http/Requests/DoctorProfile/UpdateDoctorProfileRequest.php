@@ -25,11 +25,13 @@ class UpdateDoctorProfileRequest extends FormRequest
             'first_name' => 'string|max:255',
             'last_name' => 'string|max:255',
             'phone_number' => 'string|max:15',
-            'email' => 'email|unique:users,email|string',
-            'password' => 'string|min:8',
+            'email' => 'email|unique:users,email,' . $this->route('id') . '|string',
+            'password' => 'nullable|string|min:8',
             'license_number' => 'string',
             'is_active' => 'boolean',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'specialities' => 'nullable|array',
+            'specialities.*' => 'exists:specialities,id',
         ];
     }
 }

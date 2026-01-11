@@ -2,6 +2,7 @@
 
 namespace App\Services\DoctorProfile;
 
+use App\Models\DoctorSpecialities;
 use App\Models\PatientProfile;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -40,9 +41,20 @@ class DoctorProfileService
             'is_active' => $data['is_active'],
         ]);
 
+        // Create doctor specialities if provided
+        if (isset($data['specialities']) && is_array($data['specialities'])) {
+            foreach ($data['specialities'] as $specialityId) {
+                DoctorSpecialities::create([
+                    'doctor_profile_id' => $doctorProfile->id,
+                    'speciality_id' => $specialityId,
+                    'primary_speciality' => 'General', // Default value
+                ]);
+            }
+        }
+
         $user->assignRole('doctor');
 
-        return $user->load('doctor_profile');
+        return $user->load('doctor_profile.specialities');
     }
 
     public function doctorLogin($data)
@@ -99,9 +111,27 @@ class DoctorProfileService
                 }
             }
 
+            // Update specialities if provided
+            if (isset($data['specialities']) && is_array($data['specialities'])) {
+                $profile = $doctor->doctor_profile;
+                if ($profile) {
+                    // Remove existing specialities
+                    $profile->specialities()->detach();
+
+                    // Add new specialities
+                    foreach ($data['specialities'] as $specialityId) {
+                        DoctorSpecialities::create([
+                            'doctor_profile_id' => $profile->id,
+                            'speciality_id' => $specialityId,
+                            'primary_speciality' => 'General', // Default value
+                        ]);
+                    }
+                }
+            }
+
         });
 
-        return $doctor->load('doctor_profile');
+        return $doctor->load('doctor_profile.specialities');
     }
 
     public function getPatientsByDoctor($doctorId)
