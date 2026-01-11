@@ -14,18 +14,20 @@ class RegisterResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        $data = [
             'id' => $this->id,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
             'phone_number' => $this->phone_number,
             'email' => $this->email,
-            'password' => $this->password,
-            'gender' => $this->patient_profile->gender,
-            'age' => $this->patient_profile->age,
-            'dob' => $this->patient_profile->dob,
-            'address' => $this->patient_profile->address,
             'role' => $this->getRoleNames(),
         ];
+
+        // Patient profile
+        if ($this->relationLoaded('patient_profile') && $this->patient_profile) {
+            $data['profile'] = $this->patient_profile->makeHidden(['user_id', 'created_at', 'updated_at'])->toArray();
+        }
+
+        return $data;
     }
 }

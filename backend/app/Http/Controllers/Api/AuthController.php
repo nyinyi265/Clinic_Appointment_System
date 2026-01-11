@@ -26,12 +26,22 @@ class AuthController extends Controller
         DB::beginTransaction();
         try {
             $validated = $request->validated();
+
+            // Handle profile picture upload
+            if ($request->hasFile('profile_picture')) {
+                $file = $request->file('profile_picture');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('images'), $filename);
+                $validated['profile_picture'] = 'images/' . $filename;
+            }
+
             $createdPatient = $this->authService->patientRegister($validated);
             if (!$createdPatient) {
                 return $this->fail('fail', null, 'Patient registered fail', 404);
             }
 
             $createdPatient->assignRole('patient');
+            $createdPatient->load('patient_profile');
 
             DB::commit();
 

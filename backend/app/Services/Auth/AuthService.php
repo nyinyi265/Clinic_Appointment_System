@@ -24,6 +24,7 @@ class AuthService
             'dob' => $data['dob'],
             'gender' => $data['gender'],
             'address' => $data['address'],
+            'profile_picture' => $data['profile_picture'] ?? null,
         ]);
         $user->assignRole('patient');
         $user->load('patient_profile');

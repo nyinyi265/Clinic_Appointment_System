@@ -50,4 +50,9 @@ class DoctorClinicService
     {
         return DoctorClinic::with(['doctor.user', 'doctor.specialities', 'clinic'])->where('clinic_id', $clinicId)->get();
     }
+
+    public function getPendingClinicRequests()
+    {
+        return DoctorClinic::with(['doctor.user', 'clinic'])->where('is_active', false)->get();
+    }
 }

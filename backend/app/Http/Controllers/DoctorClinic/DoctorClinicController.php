@@ -136,4 +136,20 @@ class DoctorClinicController extends Controller
             return $this->fail('fail', null, $e->getMessage(), 500);
         }
     }
+
+    public function getPendingClinicRequests()
+    {
+        try {
+            $requests = $this->doctorClinicService->getPendingClinicRequests();
+            if (!$requests) {
+                return $this->fail('fail', null, 'No pending requests found', 404);
+            }
+
+            return $this->success('success', [
+                'data' => DoctorClinicResource::collection($requests),
+            ], 'Pending requests retrieved successfully', 200);
+        } catch (\Exception $e) {
+            return $this->fail('fail', null, 'Internal server error', 500);
+        }
+    }
 }

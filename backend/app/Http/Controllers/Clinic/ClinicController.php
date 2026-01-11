@@ -104,4 +104,20 @@ class ClinicController extends Controller
 
         return $this->success('success', null, 'Clinic deleted successfully', 200);
     }
+
+    public function getAllClinicsForDoctor($doctorId)
+    {
+        try {
+            $clinics = $this->clinicService->getAllClinicsWithRelationForDoctor($doctorId);
+            if (!$clinics) {
+                return $this->fail('fail', null, 'No clinics found', 404);
+            }
+
+            return $this->success('success', [
+                'data' => ClinicResource::collection($clinics),
+            ], 'Clinics retrieved successfully', 200);
+        } catch (\Exception $e) {
+            return $this->fail('fail', null, 'Internal server error', 500);
+        }
+    }
 }

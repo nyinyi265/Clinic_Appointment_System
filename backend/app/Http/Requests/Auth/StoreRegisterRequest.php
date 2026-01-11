@@ -31,6 +31,7 @@ class StoreRegisterRequest extends FormRequest
             'age' => 'required|integer|min:1',
             'dob' => 'required|date',
             'address' => 'nullable|string',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
 }

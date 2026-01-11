@@ -19,6 +19,10 @@ class ClinicResource extends JsonResource
             'name' => $this->name,
             'address' => $this->address,
             'phone_number' => $this->phone_number,
+            'is_related' => !is_null($this->relation_id) && $this->is_active,
+            'is_requested' => !is_null($this->relation_id) && !$this->is_active,
+            'role' => $this->role,
+            'is_active' => $this->is_active,
         ];
     }
 }
