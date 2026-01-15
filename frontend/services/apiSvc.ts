@@ -506,3 +506,32 @@ export const deleteMessageById = async (id: number) => {
     },
   });
 };
+
+export const assignDoctorToClinic = async (data: {
+  doctor_id: string;
+  clinic_id: string;
+}) => {
+  const response = await api.post("/v1/assign-doctor", data, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
+  return response.data;
+};
+
+export const removeDoctorFromClinic = (id: number) => {
+  return api.delete(`/v1/doctor-clinic/${id}`, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
+};
+
+export const getDoctorClinicAssignments = async () => {
+  const response = await api.get("/v1/doctor-clinic-assignments", {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
+  return response.data;
+};

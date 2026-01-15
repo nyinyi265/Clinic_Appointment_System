@@ -28,6 +28,7 @@ import DoctorClinics from "./pages/Doctor/Clinics";
 import DoctorProfile from "./pages/Doctor/Profile";
 import Schedules from "./pages/Doctor/Schedules";
 import { Toaster } from "sonner";
+import AssignDoctorPage from "./pages/Admin/AssignDoctorPage";
 
 function App() {
   return (
@@ -102,6 +103,7 @@ function App() {
         <Route path="/doctor/clinics" element={<DoctorClinics />} />
         <Route path="/doctor/profile" element={<DoctorProfile />} />
         <Route path="/doctor/schedules" element={<Schedules />} />
+        <Route path="/assign-doctors" element={<AssignDoctorPage />} />
       </Routes>
       <Toaster position="top-right" richColors />
     </>

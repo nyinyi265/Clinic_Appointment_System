@@ -8,6 +8,7 @@ import {
   Building2,
   Heart,
   MessageSquare,
+  UserPlus,
 } from "lucide-react";
 import {
   Sidebar,
@@ -59,6 +60,11 @@ const items = [
     title: "Messages",
     url: "/admin/messages",
     icon: MessageSquare,
+  },
+  {
+    title: "Assign Doctors",
+    url: "/assign-doctors",
+    icon: UserPlus,
   },
 ];
 
