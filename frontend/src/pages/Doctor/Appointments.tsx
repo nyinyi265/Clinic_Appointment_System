@@ -30,7 +30,8 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
+import { getStorage } from "../../util/storage";
+import { toast } from "sonner";
 interface Appointment {
   id: number;
   appointment_date: string;
@@ -56,7 +57,7 @@ const Appointments = () => {
   const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getStorage().getItem("token");
     if (!token) {
       navigate("/login");
       return;
@@ -66,13 +67,18 @@ const Appointments = () => {
 
   const fetchAppointments = async () => {
     try {
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      const user = JSON.parse(getStorage().getItem("user") || "{}");
       const userId = user.data.profile.id;
 
       const data = await getAppointmentByDoctorId(userId);
       console.log("Fetched appointments:", data);
       if (data.status === "success") {
-        setAppointments(data.data.data);
+        const sortedAppointments = data.data.data.sort(
+          (a, b) =>
+            new Date(b.appointment_date + " " + b.start_time) -
+            new Date(a.appointment_date + " " + a.start_time)
+        );
+        setAppointments(sortedAppointments);
       }
     } catch (error) {
       console.error("Error fetching appointments:", error);
@@ -83,13 +89,37 @@ const Appointments = () => {
 
   const updateAppointment = async (appointmentId: number, status: string) => {
     try {
-      console.log(`Updating appointment ${appointmentId} to status: ${status}`);
+      console.log("Appointment status", status)
       const data = await updateAppointmentStatusByDoctor(appointmentId, status);
+
       if (data.status === "success") {
         fetchAppointments();
+        switch (status) {
+          case "confirmed":
+            toast.success("Appointment Approved", {
+              description: "The patient will be notified of the confirmation.",
+            });
+            break;
+          case "completed":
+            toast.success("Session Completed", {
+              description: "The appointment has been moved to history.",
+            });
+            break;
+          case "rejected":
+            toast.success("Session Completed", {
+              description: "The appointment has been rejected.",
+            });
+            break;
+          default:
+            toast.success("Status Updated");
+        }
       }
     } catch (error) {
       console.error("Error updating appointment status:", error);
+      toast.error("Server Error", {
+        description:
+          "An unexpected error occurred. Please check your connection.",
+      });
     }
   };
 
@@ -101,7 +131,7 @@ const Appointments = () => {
         return "bg-blue-100 text-blue-700 border-blue-200";
       case "completed":
         return "bg-emerald-100 text-emerald-700 border-emerald-200";
-      case "cancelled":
+      case "rejected":
         return "bg-red-100 text-red-700 border-red-200";
       default:
         return "bg-gray-100 text-gray-700 border-gray-200";
@@ -121,7 +151,9 @@ const Appointments = () => {
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-sm text-muted-foreground">Loading appointments...</p>
+            <p className="text-sm text-muted-foreground">
+              Loading appointments...
+            </p>
           </div>
         </div>
       )}
@@ -147,13 +179,17 @@ const Appointments = () => {
                 <SelectItem value="confirmed">Confirmed</SelectItem>
                 <SelectItem value="completed">Completed</SelectItem>
                 <SelectItem value="cancelled">Cancelled</SelectItem>
+                <SelectItem value="rejected">rejected</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </section>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredAppointments.map((appointment) => (
-            <Card key={appointment.id} className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow ring-1 ring-border/50">
+            <Card
+              key={appointment.id}
+              className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow ring-1 ring-border/50"
+            >
               <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
                 <div className="space-y-1">
                   <h3 className="font-semibold text-lg tracking-tight">
@@ -236,7 +272,7 @@ const Appointments = () => {
                     <Button
                       size="sm"
                       onClick={() =>
-                        updateAppointment(appointment.id, "cancelled")
+                        updateAppointment(appointment.id, "rejected")
                       }
                       className="flex-1 bg-[#B91C1C] hover:bg-[#B91C1C]/90 text-white cursor-pointer"
                     >

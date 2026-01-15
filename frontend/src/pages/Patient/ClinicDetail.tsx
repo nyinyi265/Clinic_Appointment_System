@@ -6,7 +6,7 @@ import Navbar from "../../components/common/navbar";
 import Footer from "../../components/common/footer";
 import { getClinicById, getDoctorsByClinic } from "../../../services/apiSvc";
 import LoadingOverlay from "@/components/common/LoadingOverlay";
-
+import { getStorage } from "../../util/storage";
 interface Clinic {
   id: number;
   name: string;
@@ -49,7 +49,7 @@ const ClinicDetail = () => {
   const [loadingDoctors, setLoadingDoctors] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getStorage().getItem("token");
     if (!token) {
       navigate("/login");
       return;
@@ -112,7 +112,7 @@ const ClinicDetail = () => {
       <Navbar role="patient" />
       <main className="container mx-auto py-8 px-4">
         <div className="mb-6">
-          <Button variant="outline" onClick={() => navigate("/clinic")}>
+          <Button variant="outline" onClick={() => navigate("/clinic")} className="cursor-pointer hover:bg-blue-100">
             ← Back to Clinics
           </Button>
         </div>

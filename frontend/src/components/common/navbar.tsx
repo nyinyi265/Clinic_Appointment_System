@@ -3,6 +3,7 @@ import { navLinks } from "../../config/navLinks";
 import { Stethoscope, User, LogOut, ChevronDown } from "lucide-react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { getStorage } from "../../util/storage";
 
 type NavbarProps = {
   role?: "patient" | "doctor";
@@ -11,14 +12,19 @@ type NavbarProps = {
 const Navbar: React.FC<NavbarProps> = ({ role }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const token = localStorage.getItem("token");
-  const storedRole = localStorage.getItem("role") as NavbarProps["role"] | null;
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const storage = getStorage();
+  const token = storage.getItem("token");
+  const storedRole = storage.getItem("role") as NavbarProps["role"] | null;
+  const user = JSON.parse(storage.getItem("user") || "{}");
   const isLoggedIn = !!token;
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
   const currentRole = role ?? storedRole;
+
+  const profilePicPath = user.data?.profile?.profile_picture;
+  const avatarUrl = profilePicPath
+    ? `http://localhost:8000/${profilePicPath}`
+    : null;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -45,9 +51,9 @@ const Navbar: React.FC<NavbarProps> = ({ role }) => {
   });
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    localStorage.removeItem("user");
+    storage.removeItem("token");
+    storage.removeItem("role");
+    storage.removeItem("user");
     navigate("/");
   };
 
@@ -93,10 +99,16 @@ const Navbar: React.FC<NavbarProps> = ({ role }) => {
                   </p>
                 </div>
                 <Avatar className="h-9 w-9 border-2 border-gray-200 bg-gray-100 rounded-full overflow-hidden flex items-center justify-center">
-                  {/* <AvatarImage src="/public/placeholder-user.jpg" /> */}
-                  <AvatarFallback>
-                    {user.data.first_name[0].toUpperCase()}
-                    {user.data.last_name[0].toUpperCase()}
+                  {avatarUrl && (
+                    <AvatarImage
+                      src={avatarUrl}
+                      alt={user.data.first_name}
+                      className="h-full w-full object-cover"
+                    />
+                  )}
+                  <AvatarFallback className="flex h-full w-full items-center justify-center bg-blue-100 text-brandBlue text-xs font-bold">
+                    {user.data.first_name?.[0].toUpperCase()}
+                    {user.data.last_name?.[0].toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <ChevronDown className="h-4 w-4 text-muted-foreground" />

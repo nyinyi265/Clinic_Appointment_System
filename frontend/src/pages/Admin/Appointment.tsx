@@ -1,13 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import { deleteAppointmentById, getAllAppointments } from "../../../services/apiSvc";
+import {
+  deleteAppointmentById,
+  getAllAppointments,
+} from "../../../services/apiSvc";
 import { Loader2, Trash2 } from "lucide-react";
+import ConfirmDialog from "../../components/ConfirmDialog";
+import { toast } from "sonner";
 
 export default function Appointment() {
   const [appointments, setAppointment] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [deleting, setDeleting] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    appointmentId: null as number | null,
+    patientName: "",
+  });
 
   const fetchAppointments = async () => {
     try {
@@ -27,28 +37,57 @@ export default function Appointment() {
     fetchAppointments();
   }, []);
 
-  const deleteAppointment = async (id: number) => {
-    try{
-      setDeleting(id);
-      await deleteAppointmentById(id);
-      fetchAppointments();
-    }catch(err: any){
+  const handleDeleteClick = (appt: any) => {
+    const name = appt.patient?.user
+      ? `${appt.patient.user.first_name} ${appt.patient.user.last_name}`
+      : "Unknown Patient";
+
+    setConfirmDialog({
+      isOpen: true,
+      appointmentId: appt.id,
+      patientName: name,
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!confirmDialog.appointmentId) return;
+    setDeleteLoading(true);
+    try {
+      await deleteAppointmentById(confirmDialog.appointmentId);
+
+      toast.success("Appointment Deleted", {
+        description: `The appointment for ${confirmDialog.patientName} has been successfully removed.`,
+      });
+
+      await fetchAppointments();
+      setConfirmDialog({ isOpen: false, appointmentId: null, patientName: "" });
+    } catch (err: any) {
       setError(err.message || "Fail to delete appointment");
+      toast.error("Error", {
+        description:
+          err.message || "Failed to delete the appointment. Please try again.",
+      });
     } finally {
-      setDeleting(null);
+      setDeleteLoading(false);
     }
-  }
+  };
+
+  const handleCloseDialog = () => {
+    setConfirmDialog({ isOpen: false, appointmentId: null, patientName: "" });
+  };
 
   return (
     <div>
       {loading && (
-      <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">Loading appointments...</p>
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground">
+              Loading appointments...
+            </p>
+          </div>
         </div>
-      </div>
-    )}
+      )}
       <h1 className="text-2xl font-bold mb-4">Appointments</h1>
 
       <div className="bg-white p-4 rounded shadow">
@@ -93,8 +132,8 @@ export default function Appointment() {
                   <td className="border p-2 flex justify-center">
                     <button
                       className="flex items-center justify-center bg-red-600 p-2 rounded-md text-white cursor-pointer hover:bg-red-700 disabled:opacity-50"
-                      onClick={() => deleteAppointment(appointment.id)}
-                      disabled={deleting === appointment.id}
+                      onClick={() => handleDeleteClick(appointment)}
+                      disabled={deleteLoading}
                     >
                       <Trash2 className="inline-block w-4 h-4" />
                     </button>
@@ -112,6 +151,16 @@ export default function Appointment() {
           </tbody>
         </table>
       </div>
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={handleCloseDialog}
+        onConfirm={handleConfirmDelete}
+        title="Cancel Appointment"
+        description={`Are you sure you want to cancel the appointment for "${confirmDialog.patientName}"? This slot will become available for other patients.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        isLoading={deleteLoading}
+      />
     </div>
   );
 }

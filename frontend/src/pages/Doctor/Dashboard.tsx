@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,14 +11,13 @@ import {
   Calendar,
   Users,
   Building2,
-  CheckCircle2,
   Clock,
   User,
   MapPin,
   Stethoscope
 } from 'lucide-react';
 import { getAppointmentByDoctorId, getClinicsByDoctor, getPatientsByDoctorId, updateAppointmentStatusByDoctor, type Appointment, type DoctorClinic, type Patient } from '../../../services/apiSvc';
-
+import { getStorage } from '../../util/storage';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -29,7 +28,7 @@ const Dashboard = () => {
   console.log('Clinics :', doctorClinics);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = getStorage().getItem('token');
     if (!token) {
       navigate('/login');
       return;
@@ -39,7 +38,7 @@ const Dashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const user = JSON.parse(getStorage().getItem('user') || '{}');
       const userId = user.data.profile.id;
       // Fetch appointments
       const appointmentsData = await getAppointmentByDoctorId(userId);
@@ -176,7 +175,7 @@ const Dashboard = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => navigate('/doctor/appointments')}
-                  className="shrink-0"
+                  className="shrink-0 cursor-pointer"
                 >
                   View All
                 </Button>
@@ -235,7 +234,7 @@ const Dashboard = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => navigate('/doctor/patients')}
-                  className="shrink-0"
+                  className="shrink-0 cursor-pointer"
                 >
                   View All
                 </Button>
@@ -251,7 +250,7 @@ const Dashboard = () => {
                         {patient.user.first_name} {patient.user.last_name}
                       </h4>
                       <p className="text-xs text-muted-foreground">
-                        Age: {patient.age} • Gender: {patient.gender}
+                        Age: {patient.age} • {patient.gender == '1' ? "Male" : "Female"}
                       </p>
                     </div>
                   </div>
@@ -281,7 +280,7 @@ const Dashboard = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => navigate('/doctor/clinics')}
-                className="shrink-0"
+                className="shrink-0 cursor-pointer"
               >
                 Manage Clinics
               </Button>

@@ -10,6 +10,8 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {}
   );
@@ -23,21 +25,26 @@ const Login: React.FC = () => {
 
     setErrors(newErrors);
 
-    if (Object.keys(newErrors).length === 0) {
-      // Handle login logic here
-      console.log("Login attempt:", { email, password });
-    }
+    if (Object.keys(newErrors).length > 0) return;
 
+    setLoading(true);
     try {
       const data = await login({ email, password });
 
       console.log("Login success:", data);
 
       const userRole = data.data?.role;
+      const storage = rememberMe ? localStorage : sessionStorage;
 
-      localStorage.setItem("token", data.data?.token);
-      localStorage.setItem("role", userRole);
-      localStorage.setItem("user", JSON.stringify(data.data));
+      // Clear the other storage
+      const otherStorage = rememberMe ? sessionStorage : localStorage;
+      otherStorage.removeItem("token");
+      otherStorage.removeItem("role");
+      otherStorage.removeItem("user");
+
+      storage.setItem("token", data.data?.token);
+      storage.setItem("role", userRole);
+      storage.setItem("user", JSON.stringify(data.data));
 
       if (userRole?.includes("admin")) {
         navigate("/admin");
@@ -52,7 +59,9 @@ const Login: React.FC = () => {
       setErrors({
         email: "Invalid email or password",
       });
-    } 
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -115,6 +124,8 @@ const Login: React.FC = () => {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
                 <label
@@ -140,8 +151,9 @@ const Login: React.FC = () => {
                 type="submit"
                 size="lg"
                 className="w-full cursor-pointer bg-brandBlue hover:bg-brandBlue/90 text-white"
+                disabled={loading}
               >
-                Sign in
+                {loading ? "Signing in..." : "Sign in"}
               </Button>
             </div>
           </form>

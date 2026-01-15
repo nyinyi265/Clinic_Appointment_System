@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { updatePatientProfile } from "../../../services/apiSvc";
-
+import { getStorage } from "../../util/storage";
+import { toast } from "sonner";
 interface PatientProfile {
   id: number;
   first_name: string;
@@ -41,8 +42,8 @@ const PatientProfile = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const token = getStorage().getItem("token");
+    const user = JSON.parse(getStorage().getItem("user") || "{}");
     if (!token) {
       navigate("/login");
       return;
@@ -129,13 +130,13 @@ const PatientProfile = () => {
       console.log("Update response:", response);
       if (response.status === "success") {
         const updatedUser = {
-          ...JSON.parse(localStorage.getItem("user") || "{}"),
+          ...JSON.parse(getStorage().getItem("user") || "{}"),
           data: response.data.data,
         };
 
-        localStorage.setItem("user", JSON.stringify(updatedUser));
-
+        getStorage().setItem("user", JSON.stringify(updatedUser));
         setProfile(response.data.data);
+        toast.success("Profile updated successfully!");
         navigate("/");
       }
     } catch (error) {

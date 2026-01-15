@@ -8,6 +8,7 @@ import {
   getAllSpecialities,
 } from "../../../services/apiSvc";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function DoctorForm() {
   const navigate = useNavigate();
@@ -112,39 +113,62 @@ export default function DoctorForm() {
     setError(null);
 
     try {
+      const dataToSend = new FormData();
+
+      dataToSend.append("first_name", formData.first_name);
+      dataToSend.append("last_name", formData.last_name);
+      dataToSend.append("phone_number", formData.phone_number);
+      dataToSend.append("email", formData.email);
+      dataToSend.append("license_number", formData.license_number);
+      dataToSend.append("is_active", formData.is_active ? "1" : "0");
+      selectedSpecialities.forEach((id) => {
+        dataToSend.append("specialities[]", id.toString());
+      });
       if (isEditMode && id) {
-        // For edit mode, don't send password if empty
-        const updateData = { ...formData, specialities: selectedSpecialities };
-        if (!updateData.password || updateData.password.trim() === "") {
-          delete updateData.password;
+        dataToSend.append("_method", "PUT");
+
+        if (formData.password && formData.password.trim() !== "") {
+          dataToSend.append("password", formData.password);
         }
-        await updateDoctor(parseInt(id), updateData);
+        console.log(formData);
+        await updateDoctor(parseInt(id), dataToSend);
+
+        toast.success("Doctor Updated", {
+          description: `Dr. ${formData.first_name} ${formData.last_name}'s profile has been updated.`,
+        });
       } else {
-        // For create mode, ensure password is provided
         if (!formData.password || formData.password.trim() === "") {
           setError("Password is required for new doctors");
           setLoading(false);
           return;
         }
-        await createDoctor({
-          ...formData,
-          specialities: selectedSpecialities,
-        } as {
-          first_name: string;
-          last_name: string;
-          phone_number: string;
-          email: string;
-          password: string;
-          license_number: string;
-          is_active: boolean;
-          specialities: number[];
+        dataToSend.append("password", formData.password);
+
+        await createDoctor(dataToSend);
+
+        toast.success("Doctor Created", {
+          description: `Dr. ${formData.first_name} ${formData.last_name} has been added to the system.`,
         });
       }
       navigate("/admin/doctors");
     } catch (err: any) {
+      if (err.response && err.response.data.errors) {
+        console.error("Validation Errors:", err.response.data.errors);
+        toast.error("Validation Failed", {
+          description: Object.values(err.response.data.errors)
+            .flat()
+            .join(", "),
+        });
+      } else {
+        setError(err.message || "Action Failed");
+      }
       setError(
         err.message || `Failed to ${isEditMode ? "update" : "create"} doctor`
       );
+
+      toast.error("Action Failed", {
+        description: err.message,
+      });
     } finally {
       setLoading(false);
     }
@@ -156,9 +180,7 @@ export default function DoctorForm() {
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-sm text-muted-foreground">
-              Loading doctor...
-            </p>
+            <p className="text-sm text-muted-foreground">Loading doctor...</p>
           </div>
         </div>
       )}

@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getClinicById, createClinic, updateClinic } from "../../../services/apiSvc";
+import {
+  getClinicById,
+  createClinic,
+  updateClinic,
+} from "../../../services/apiSvc";
+import { toast } from "sonner";
 
 export default function ClinicForm() {
   const navigate = useNavigate();
@@ -39,11 +44,13 @@ export default function ClinicForm() {
     }
   }, [id, isEditMode]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -55,12 +62,24 @@ export default function ClinicForm() {
     try {
       if (isEditMode && id) {
         await updateClinic(parseInt(id), formData);
+
+        toast.success("Clinic Updated", {
+          description: `${formData.name} has been successfully updated.`,
+        });
       } else {
         await createClinic(formData);
+        toast.success("Clinic Created", {
+          description: `${formData.name} has been added to the system.`,
+        });
       }
       navigate("/admin/clinics");
     } catch (err: any) {
-      setError(err.message || `Failed to ${isEditMode ? 'update' : 'create'} clinic`);
+      setError(
+        err.message || `Failed to ${isEditMode ? "update" : "create"} clinic`
+      );
+      toast.error("Action Failed", {
+        description: err.message,
+      });
     } finally {
       setLoading(false);
     }
@@ -78,15 +97,18 @@ export default function ClinicForm() {
     <div>
       <div className="flex items-center gap-4 mb-6">
         <h1 className="text-2xl font-bold">
-          {isEditMode ? 'Edit Clinic' : 'Create New Clinic'}
+          {isEditMode ? "Edit Clinic" : "Create New Clinic"}
         </h1>
       </div>
 
       <div className="bg-white p-6 rounded shadow max-w-2xl">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-              Clinic Name {isEditMode ? '' : '*'}
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Clinic Name {isEditMode ? "" : "*"}
             </label>
             <input
               type="text"
@@ -101,8 +123,11 @@ export default function ClinicForm() {
           </div>
 
           <div>
-            <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
-              Address {isEditMode ? '' : '*'}
+            <label
+              htmlFor="address"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Address {isEditMode ? "" : "*"}
             </label>
             <textarea
               id="address"
@@ -117,8 +142,11 @@ export default function ClinicForm() {
           </div>
 
           <div>
-            <label htmlFor="phone_number" className="block text-sm font-medium text-gray-700 mb-1">
-              Phone Number {isEditMode ? '' : '*'}
+            <label
+              htmlFor="phone_number"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Phone Number {isEditMode ? "" : "*"}
             </label>
             <input
               type="tel"
@@ -132,11 +160,7 @@ export default function ClinicForm() {
             />
           </div>
 
-          {error && (
-            <div className="text-red-600 text-sm">
-              {error}
-            </div>
-          )}
+          {error && <div className="text-red-600 text-sm">{error}</div>}
 
           <div className="flex gap-4">
             <button
@@ -144,7 +168,13 @@ export default function ClinicForm() {
               disabled={loading}
               className="px-6 py-2 bg-brandBlue text-white rounded-md hover:bg-brandBlue/90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
-              {loading ? (isEditMode ? "Updating..." : "Creating...") : (isEditMode ? "Update Clinic" : "Create Clinic")}
+              {loading
+                ? isEditMode
+                  ? "Updating..."
+                  : "Creating..."
+                : isEditMode
+                ? "Update Clinic"
+                : "Create Clinic"}
             </button>
             <button
               type="button"

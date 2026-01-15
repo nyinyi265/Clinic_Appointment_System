@@ -3,12 +3,20 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { deleteClinicById, getAllClinics } from "../../../services/apiSvc";
 import { Pencil, Trash2, Plus, Loader2 } from "lucide-react";
+import ConfirmDialog from "../../components/ConfirmDialog";
+import { toast } from "sonner";
 
 export default function Clinic() {
   const navigate = useNavigate();
   const [clinics, setClinics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    clinicId: null as number | null,
+    clinicName: "",
+  });
 
   const fetchClinics = async () => {
     try {
@@ -19,6 +27,9 @@ export default function Clinic() {
       }
     } catch (err: any) {
       setError(err.message || "Failed to fetch clinics");
+      toast.error("Fetch Error", {
+        description: "Could not load clinics list.",
+      });
     } finally {
       setLoading(false);
     }
@@ -28,24 +39,50 @@ export default function Clinic() {
     fetchClinics();
   }, []);
 
-  const deleteClinic = async (id: number) => {
+  const handleDeleteClick = (clinic: any) => {
+    setConfirmDialog({
+      isOpen: true,
+      clinicId: clinic.id,
+      clinicName: clinic.name,
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!confirmDialog.clinicId) return;
+
+    setDeleteLoading(true);
     try {
-      await deleteClinicById(id);
-      fetchClinics();
+      await deleteClinicById(confirmDialog.clinicId);
+
+      toast.success("Clinic Deleted", {
+        description: `The clinic ${confirmDialog.clinicName} has been successfully removed.`,
+      });
+
+      await fetchClinics();
+      handleCloseDialog();
     } catch (err: any) {
-      setError(err.message || "Failed to delete clinic");
+      toast.error("Error", {
+        description:
+          err.message || "Failed to delete clinic. Please try again.",
+      });
+    } finally {
+      setDeleteLoading(false);
     }
+  };
+
+  const handleCloseDialog = () => {
+    setConfirmDialog({ isOpen: false, clinicId: null, clinicName: "" });
   };
   return (
     <div>
       {loading && (
-      <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">Loading clinics...</p>
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground">Loading clinics...</p>
+          </div>
         </div>
-      </div>
-    )}
+      )}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Clinics</h1>
         <button
@@ -81,13 +118,16 @@ export default function Clinic() {
                   <td className="border p-2 flex gap-2 justify-center">
                     <button
                       className="flex items-center justify-center bg-brandBlue p-2 rounded-md text-white cursor-pointer hover:bg-brandBlue/90"
-                      onClick={() => navigate(`/admin/clinics/edit/${clinic.id}`)}
+                      onClick={() =>
+                        navigate(`/admin/clinics/edit/${clinic.id}`)
+                      }
                     >
                       <Pencil className="inline-block w-4 h-4" />
                     </button>
                     <button
-                      className="flex items-center justify-center bg-red-600 p-2 rounded-md text-white cursor-pointer hover:bg-red-700"
-                      onClick={() => deleteClinic(clinic.id)}
+                      className="flex items-center justify-center bg-red-600 p-2 rounded-md text-white cursor-pointer hover:bg-red-700 disabled:opacity-50"
+                      onClick={() => handleDeleteClick(clinic)}
+                      disabled={deleteLoading}
                     >
                       <Trash2 className="inline-block w-4 h-4" />
                     </button>
@@ -105,6 +145,16 @@ export default function Clinic() {
           </tbody>
         </table>
       </div>
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={handleCloseDialog}
+        onConfirm={handleConfirmDelete}
+        title="Delete Clinic"
+        description={`Are you sure you want to delete "${confirmDialog.clinicName}"? This action cannot be undone and may affect doctors assigned to this clinic.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        isLoading={deleteLoading}
+      />
     </div>
   );
 }

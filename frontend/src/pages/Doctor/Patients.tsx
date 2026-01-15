@@ -13,7 +13,7 @@ import Footer from "../../components/common/footer";
 import LoadingOverlay from "../../components/common/LoadingOverlay";
 import { getPatientsByDoctorId } from "../../../services/apiSvc";
 import { Mail, Phone, MapPin, User, Calendar } from "lucide-react";
-
+import { getStorage } from "../../util/storage";
 interface Patient {
   id: number;
   user: {
@@ -35,7 +35,7 @@ const Patients = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getStorage().getItem("token");
     if (!token) {
       navigate("/login");
       return;
@@ -45,7 +45,7 @@ const Patients = () => {
 
   const fetchPatients = async () => {
     try {
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      const user = JSON.parse(getStorage().getItem("user") || "{}");
       const userId = user.data.profile.id;
 
       const data = await getPatientsByDoctorId(userId);

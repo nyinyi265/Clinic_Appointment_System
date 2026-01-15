@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +7,8 @@ import Navbar from "../../components/common/navbar";
 import Footer from "../../components/common/footer";
 import { getDoctorById, getClinicsByDoctor } from "../../../services/apiSvc";
 import LoadingOverlay from "@/components/common/LoadingOverlay";
-
+import { getStorage } from "../../util/storage";
+import { Loader2 } from "lucide-react";
 interface Doctor {
   id: number;
   first_name: string;
@@ -61,36 +62,10 @@ const DoctorDetail = () => {
   const [loadingDoctor, setLoadingDoctor] = useState(true);
   const [loadingClinics, setLoadingClinics] = useState(true);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-    if (id) {
-      fetchDoctor();
-      fetchClinics();
-    }
-  }, [navigate, id]);
-
-  const fetchDoctor = async () => {
-    try {
-      setLoadingDoctor(true);
-      const data = await getDoctorById(parseInt(id!));
-      if (data.status === "success") {
-        setDoctor(data.data.data);
-      }
-    } catch (error) {
-      console.error("Error fetching doctor:", error);
-    } finally {
-      setLoadingDoctor(false);
-    }
-  };
-
-  const fetchClinics = async () => {
+  const fetchClinics = useCallback(async (profileId: number) => {
     try {
       setLoadingClinics(true);
-      const data = await getClinicsByDoctor(parseInt(id!));
+      const data = await getClinicsByDoctor(profileId);
       if (data.status === "success") {
         setClinics(data.data.data);
       }
@@ -99,7 +74,38 @@ const DoctorDetail = () => {
     } finally {
       setLoadingClinics(false);
     }
-  };
+  }, []);
+
+  const fetchDoctor = useCallback(async () => {
+    try {
+      setLoadingDoctor(true);
+      const data = await getDoctorById(parseInt(id!));
+      if (data.status === "success") {
+        const doctorData = data.data.data;
+        setDoctor(doctorData);
+
+        // --- 3. CRITICAL CHANGE: Use the profile ID from the response ---
+        if (doctorData.profile && doctorData.profile.id) {
+          fetchClinics(doctorData.profile.id);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching doctor:", error);
+    } finally {
+      setLoadingDoctor(false);
+    }
+  }, [id, fetchClinics]);
+
+  useEffect(() => {
+    const token = getStorage().getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+    if (id) {
+      fetchDoctor();
+    }
+  }, [navigate, id, fetchDoctor]);
 
   if (loadingDoctor) {
     return (
@@ -124,7 +130,7 @@ const DoctorDetail = () => {
       <Navbar role="patient" />
       <main className="container mx-auto py-8 px-4">
         <div className="mb-6">
-          <Button variant="outline" onClick={() => navigate("/doctor")}>
+          <Button variant="outline" onClick={() => navigate("/doctor")} className="cursor-pointer hover:bg-blue-100">
             ← Back to Doctors
           </Button>
         </div>
@@ -153,9 +159,16 @@ const DoctorDetail = () => {
 
         <h2 className="text-xl font-bold mb-4">Clinics</h2>
         {loadingClinics ? (
-          <p>Loading clinics...</p>
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Loader2 className="animate-spin h-5 w-5" />
+            <p>Loading clinics for this doctor...</p>
+          </div>
         ) : clinics.length === 0 ? (
-          <p>No clinics found for this doctor.</p>
+          <div className="bg-muted/50 p-6 rounded-lg text-center border-dashed border-2">
+            <p className="text-muted-foreground">
+              No clinics found for this doctor's profile.
+            </p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {clinics.map((doctorClinic) => (

@@ -16,10 +16,11 @@ import {
   Award,
   Zap,
 } from "lucide-react";
+import { getStorage } from "../util/storage";
 
 const Home = () => {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = getStorage().getItem("token");
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
@@ -425,7 +426,7 @@ const Home = () => {
             <Button
               size="lg"
               variant="secondary"
-              className="shadow-xl px-8 py-4 text-lg"
+              className="shadow-xl px-8 py-4 text-lg cursor-pointer"
             >
               Start Your Journey
               <Heart className="ml-2 h-5 w-5" />
@@ -433,7 +434,8 @@ const Home = () => {
             <Button
               size="lg"
               variant="outline"
-              className="border-white text-white hover:bg-white hover:text-brandBlue shadow-xl px-8 py-4 text-lg"
+              className="border-white text-brandBlue hover:bg-white cursor-pointer hover:text-brandBlue shadow-xl px-8 py-4 text-lg"
+              onClick={() => navigate('/contactus')}
             >
               Contact Support
             </Button>

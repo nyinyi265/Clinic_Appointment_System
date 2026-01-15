@@ -17,9 +17,10 @@ import {
   Zap,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { getStorage } from "../../util/storage";
 
 const Aboutus = () => {
-  const token = localStorage.getItem("token");
+  const token = getStorage().getItem("token");
   const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-background text-foreground">

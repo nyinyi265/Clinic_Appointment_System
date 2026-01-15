@@ -4,6 +4,7 @@ import Button from "../components/Button";
 import Input from "../components/Input";
 import { register } from "../../services/authSvc";
 import { useNavigate } from "react-router-dom";
+import { getStorage } from "../util/storage";
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
@@ -78,9 +79,10 @@ const Register: React.FC = () => {
       console.log("Registration success:", data);
 
       // Store token and user data
-      localStorage.setItem("token", data.data.token);
-      localStorage.setItem("role", "patient");
-      localStorage.setItem("user", JSON.stringify(data.data));
+      const storage = getStorage();
+      storage.setItem("token", data.data.token);
+      storage.setItem("role", "patient");
+      storage.setItem("user", JSON.stringify(data.data));
 
       navigate("/");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Navbar from "../../components/common/navbar";
 import Footer from "../../components/common/footer";
-// import { toast } from "sonner";
+import { toast } from "sonner";
 import {
   Mail,
   Phone,
@@ -19,6 +19,7 @@ import {
   Twitter,
   Instagram,
   Linkedin,
+  Loader2,
 } from "lucide-react";
 import { sendMessage } from "../../../services/apiSvc";
 
@@ -30,6 +31,7 @@ const Contactus = () => {
     subject: "",
     message: "",
   });
+  const [isSending, setIsSending] = useState(false);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -40,6 +42,7 @@ const Contactus = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSending(true);
     try {
       const response = await sendMessage({
         first_name: formData.firstName,
@@ -49,7 +52,11 @@ const Contactus = () => {
         message: formData.message,
       });
       console.log("Message sent successfully:", response);
-      // toast.success("Message sent successfully!");
+
+      toast.success("Message sent!", {
+        description:
+          "Thank you for reaching out. We will get back to you soon.",
+      });
       // Reset form
       setFormData({
         firstName: "",
@@ -61,6 +68,11 @@ const Contactus = () => {
     } catch (error) {
       // toast.error("Failed to send message. Please try again.");
       console.error("Error sending message:", error);
+      toast.error("Failed to send message", {
+        description: "Please try again later or contact us via phone.",
+      });
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -249,8 +261,17 @@ const Contactus = () => {
                   type="submit"
                   className="w-full bg-brandBlue hover:bg-brandBlue/90 text-white shadow-lg cursor-pointer"
                 >
-                  <Send className="mr-2 h-4 w-4" />
-                  Send Message
+                  {isSending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="mr-2 h-4 w-4" />
+                      Send Message
+                    </>
+                  )}
                 </Button>
               </form>
             </CardContent>
@@ -330,16 +351,32 @@ const Contactus = () => {
           </div>
 
           <div className="flex justify-center gap-6 mb-8">
-            <Button variant="outline" size="lg" className="hover:bg-blue-50 cursor-pointer">
+            <Button
+              variant="outline"
+              size="lg"
+              className="hover:bg-blue-50 cursor-pointer"
+            >
               <Facebook className="h-5 w-5 text-blue-600" />
             </Button>
-            <Button variant="outline" size="lg" className="hover:bg-sky-50  cursor-pointer">
+            <Button
+              variant="outline"
+              size="lg"
+              className="hover:bg-sky-50  cursor-pointer"
+            >
               <Twitter className="h-5 w-5 text-sky-500" />
             </Button>
-            <Button variant="outline" size="lg" className="hover:bg-pink-50 cursor-pointer">
+            <Button
+              variant="outline"
+              size="lg"
+              className="hover:bg-pink-50 cursor-pointer"
+            >
               <Instagram className="h-5 w-5 text-pink-600" />
             </Button>
-            <Button variant="outline" size="lg" className="hover:bg-blue-50 cursor-pointer">
+            <Button
+              variant="outline"
+              size="lg"
+              className="hover:bg-blue-50 cursor-pointer"
+            >
               <Linkedin className="h-5 w-5 text-blue-700" />
             </Button>
           </div>

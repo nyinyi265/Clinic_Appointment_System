@@ -6,6 +6,7 @@ import {
   createSpeciality,
   updateSpeciality,
 } from "../../../services/apiSvc";
+import { toast } from "sonner";
 
 export default function SpecialityForm() {
   const navigate = useNavigate();
@@ -32,6 +33,9 @@ export default function SpecialityForm() {
           });
         } catch (err: any) {
           setError(err.message || "Failed to fetch speciality");
+          toast.error("Fetch Error", {
+            description: "Could not load speciality list.",
+          });
         } finally {
           setFetchLoading(false);
         }
@@ -59,14 +63,27 @@ export default function SpecialityForm() {
     try {
       if (isEditMode && id) {
         await updateSpeciality(parseInt(id), formData);
+
+        toast.success("Speciality Updated", {
+          description: `The speciality "${formData.name}" has been successfully updated.`,
+        });
       } else {
         await createSpeciality(formData);
+
+        toast.success("Speciality Created", {
+          description: `The speciality "${formData.name}" has been added to the system.`,
+        });
       }
       navigate("/admin/specialities");
     } catch (err: any) {
       setError(
-        err.message || `Failed to ${isEditMode ? "update" : "create"} speciality`
+        err.message ||
+          `Failed to ${isEditMode ? "update" : "create"} speciality`
       );
+
+      toast.error("Action Failed", {
+        description: err.message,
+      });
     } finally {
       setLoading(false);
     }

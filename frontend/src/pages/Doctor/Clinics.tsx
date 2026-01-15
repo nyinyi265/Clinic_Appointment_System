@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +8,7 @@ import Navbar from "../../components/common/navbar";
 import Footer from "../../components/common/footer";
 import { getAllClinicsForDoctor, requestClinicAssignment, type Clinic } from "../../../services/apiSvc";
 import { Loader2 } from "lucide-react";
+import { getStorage } from "../../util/storage";
 
 const Clinics = () => {
   const navigate = useNavigate();
@@ -15,7 +17,7 @@ const Clinics = () => {
   const [requestingClinic, setRequestingClinic] = useState<number | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getStorage().getItem("token");
     if (!token) {
       navigate("/login");
       return;
@@ -25,7 +27,7 @@ const Clinics = () => {
 
   const fetchClinics = async () => {
     try {
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      const user = JSON.parse(getStorage().getItem("user") || "{}");
       const userId = user.data.profile.id;
       console.log("userId :", userId);
       const data = await getAllClinicsForDoctor(userId);
@@ -43,7 +45,7 @@ const Clinics = () => {
   const handleRequestAssignment = async (clinicId: number) => {
     try {
       setRequestingClinic(clinicId);
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      const user = JSON.parse(getStorage().getItem("user") || "{}");
       const doctorId = user.data.profile.id;
       await requestClinicAssignment(clinicId, doctorId, "Doctor");
       // Refresh clinics

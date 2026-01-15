@@ -8,7 +8,7 @@ import Footer from '../../components/common/footer';
 import LoadingOverlay from '../../components/common/LoadingOverlay';
 import { getAllClinics } from '../../../services/apiSvc';
 import { MapPin, Phone, Search } from 'lucide-react';
-
+import { getStorage } from '../../util/storage';
 interface Clinic {
   id: number;
   name: string;
@@ -23,7 +23,7 @@ const Clinic = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = getStorage().getItem('token');
     if (!token) {
       navigate('/login');
       return;

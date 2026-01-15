@@ -22,6 +22,7 @@ import {
   SidebarGroupContent,
 } from "@/components/ui/sidebar";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import storage from "../../util/storage";
 
 const items = [
   {
@@ -63,9 +64,9 @@ const items = [
 
 export function AdminSidebar() {
   const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    localStorage.removeItem('user');
+    storage().removeItem('token');
+    storage().removeItem('role');
+    storage().removeItem('user');
     navigate('/');
   };
 

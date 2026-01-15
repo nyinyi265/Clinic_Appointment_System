@@ -2,11 +2,19 @@
 import { useEffect, useState } from "react";
 import { getAllPatients, deletePatientById } from "../../../services/apiSvc";
 import { Loader2, Trash2 } from "lucide-react";
+import ConfirmDialog from "../../components/ConfirmDialog";
+import { toast } from "sonner";
 
 export default function Patient() {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    patientId: null as number | null,
+    patientName: "",
+  });
 
   const fetchPatients = async () => {
     try {
@@ -26,13 +34,37 @@ export default function Patient() {
     fetchPatients();
   }, []);
 
-  const deletePatient = async (id: number) => {
+  const handleDeleteClick = (patient: any) => {
+    setConfirmDialog({
+      isOpen: true,
+      patientId: patient.id,
+      patientName: `${patient.first_name} ${patient.last_name}`,
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!confirmDialog.patientId) return;
+    setDeleteLoading(true);
     try {
-      await deletePatientById(id);
+      await deletePatientById(confirmDialog.patientId);
+      toast.success("Patient Deleted", {
+        description: `The patient ${confirmDialog.patientName} has been successfully removed.`,
+      });
       fetchPatients();
+      setConfirmDialog({ isOpen: false, patientId: null, patientName: "" });
     } catch (err: any) {
       setError(err.message || "Failed to delete patient");
+      toast.error("Error", {
+        description:
+          err.message || "Failed to delete the patient. Please try again.",
+      });
+    } finally {
+      setDeleteLoading(false);
     }
+  };
+
+  const handleCloseDialog = () => {
+    setConfirmDialog({ isOpen: false, patientId: null, patientName: "" });
   };
   return (
     <div>
@@ -82,10 +114,15 @@ export default function Patient() {
                   <td className="border p-2">{patient.profile.address}</td>
                   <td className="border p-2 flex justify-center">
                     <button
-                      className="flex items-center justify-center bg-red-600 p-2 rounded-md text-white cursor-pointer hover:bg-red-700"
-                      onClick={() => deletePatient(patient.id)}
+                      className="flex items-center justify-center bg-red-600 p-2 rounded-md text-white cursor-pointer hover:bg-red-700 disabled:opacity-50"
+                      onClick={() => handleDeleteClick(patient)}
+                      disabled={deleteLoading}
                     >
-                      <Trash2 className="inline-block w-4 h-4" />
+                      {deleteLoading ? (
+                        <Loader2 className="inline-block w-4 h-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="inline-block w-4 h-4" />
+                      )}
                     </button>
                   </td>
                 </tr>
@@ -100,6 +137,17 @@ export default function Patient() {
           </tbody>
         </table>
       </div>
+
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={handleCloseDialog}
+        onConfirm={handleConfirmDelete}
+        title="Delete Patient"
+        description={`Are you sure you want to delete patient "${confirmDialog.patientName}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        isLoading={deleteLoading}
+      />
     </div>
   );
 }

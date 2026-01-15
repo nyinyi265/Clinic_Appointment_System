@@ -16,7 +16,7 @@ import Footer from "../../components/common/footer";
 import LoadingOverlay from "../../components/common/LoadingOverlay";
 import { getAllDoctors, getAllSpecialities } from "../../../services/apiSvc";
 import { Search, Stethoscope, MapPin, User } from "lucide-react";
-
+import { getStorage } from "../../util/storage";
 interface Doctor {
   id: number;
   first_name: string;
@@ -54,7 +54,7 @@ const Doctor = () => {
   const [loadingSpecialities, setLoadingSpecialities] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getStorage().getItem("token");
     if (!token) {
       navigate("/login");
       return;
@@ -213,7 +213,7 @@ const Doctor = () => {
                 <div className="p-6 pt-0">
                   <Button
                     className="w-full shadow-sm gap-2 bg-brandBlue hover:bg-brandBlue/90 text-white cursor-pointer"
-                    onClick={() => navigate(`/doctor/${doctor.profile.id}`)}
+                    onClick={() => navigate(`/doctor/${doctor.id}`)}
                   >
                     View Details
                   </Button>

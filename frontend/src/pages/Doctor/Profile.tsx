@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { updateDoctorProfile } from "../../../services/apiSvc";
-
+import { getStorage } from "../../util/storage";
+import { toast } from "sonner";
 interface DoctorProfile {
   id: number;
   first_name: string;
@@ -37,8 +38,8 @@ const DoctorProfile = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const token = getStorage().getItem("token");
+    const user = JSON.parse(getStorage().getItem("user") || "{}");
     if (!token) {
       navigate("/login");
       return;
@@ -107,26 +108,28 @@ const DoctorProfile = () => {
       if (formData.profile_picture) {
         data.append("profile_picture", formData.profile_picture);
       }
-
-      for (const [key, value] of data.entries()) {
-        console.log(key, value);
-      }
       const response = await updateDoctorProfile(profile!.id, data);
-      console.log("Update response:", response);
       if (response.status === "success") {
         const updatedUser = {
-          ...JSON.parse(localStorage.getItem("user") || "{}"),
+          ...JSON.parse(getStorage().getItem("user") || "{}"),
           data: response.data.data,
         };
 
-        localStorage.setItem("user", JSON.stringify(updatedUser));
-
+        getStorage().setItem("user", JSON.stringify(updatedUser));
         setProfile(response.data.data);
+
+        console.log('profile', previewImage)
+        toast.success("Profile Updated", {
+          description:
+            "Your professional information has been successfully saved.",
+        });
         navigate("/");
       }
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert("Failed to update profile.");
+      toast.error("Update Failed", {
+        description: "Please check your information and try again.",
+      });
     } finally {
       setSaving(false);
     }
@@ -241,7 +244,9 @@ const DoctorProfile = () => {
                   className="cursor-pointer"
                   title="Is Active"
                 />
-                <Label htmlFor="is_active" className="cursor-pointer">Is Active</Label>
+                <Label htmlFor="is_active" className="cursor-pointer">
+                  Is Active
+                </Label>
               </div>
 
               <div>

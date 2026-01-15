@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import api from "../src/util/axios";
 import { AxiosError } from "axios";
+import { getStorage } from "../src/util/storage";
 
-const getToken = () => localStorage.getItem("token");
+const getToken = () => getStorage().getItem("token");
 
 export const getAllPatients = async () => {
   const response = await api.get("/v1/all-patients", {
@@ -322,6 +323,7 @@ export interface Appointment {
 export interface DoctorClinic {
   id: number;
   clinic: {
+    id: number;
     name: string;
     address: string;
   };
@@ -403,20 +405,11 @@ export const sendMessage = async (messageData: {
   subject: string;
   message: string;
 }) => {
-  const response = await api.post("/contact-message", messageData);
+  const response = await api.post("/message", messageData);
   return response.data;
 };
 
-export const createDoctor = async (doctorData: {
-  first_name: string;
-  last_name: string;
-  phone_number: string;
-  email: string;
-  password: string;
-  license_number: string;
-  is_active: boolean;
-  specialities?: number[];
-}) => {
+export const createDoctor = async (doctorData: FormData) => {
   const response = await api.post("/v1/doctor", doctorData, {
     headers: {
       Authorization: `Bearer ${getToken()}`,
@@ -425,22 +418,91 @@ export const createDoctor = async (doctorData: {
   return response.data;
 };
 
-export const updateDoctor = async (
-  id: number,
-  doctorData: {
-    first_name?: string;
-    last_name?: string;
-    phone_number?: string;
-    email?: string;
-    password?: string;
-    license_number?: string;
-    is_active?: boolean;
-  }
-) => {
-  const response = await api.put(`/v1/doctor/${id}`, doctorData, {
+export const updateDoctor = async (id: number, doctorData: FormData) => {
+  console.log("Sending to Server:", Object.fromEntries(doctorData.entries()));
+  const response = await api.post(`/v1/doctor/${id}`, doctorData, {
     headers: {
       Authorization: `Bearer ${getToken()}`,
     },
   });
   return response.data;
+};
+
+export interface DoctorSchedule {
+  id: number;
+  doctor_profile_id: number;
+  clinic_id: number;
+  date: string;
+  start_time: string;
+  end_time: string;
+  slot_duration: number;
+  is_active: boolean;
+  clinic?: {
+    name: string;
+    address: string;
+  };
+  created_at: string;
+  updated_at: string;
+}
+
+export const getSchedulesByDoctor = async (doctorId: number) => {
+  const response = await api.get(`/v1/doctor/${doctorId}/schedules`, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
+  return response.data;
+};
+
+export const createDoctorSchedule = async (scheduleData: {
+  doctor_profile_id: number;
+  clinic_id: number;
+  date: string;
+  start_time: string;
+  end_time: string;
+  slot_duration: number;
+  is_active: boolean;
+}) => {
+  const response = await api.post("/v1/doctor-schedule", scheduleData, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
+  return response.data;
+};
+
+export const updateDoctorSchedule = async (
+  id: number,
+  scheduleData: Partial<{
+    doctor_profile_id: number;
+    clinic_id: number;
+    date: string;
+    start_time: string;
+    end_time: string;
+    slot_duration: number;
+    is_active: boolean;
+  }>
+) => {
+  const response = await api.put(`/v1/doctor-schedule/${id}`, scheduleData, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
+  return response.data;
+};
+
+export const deleteDoctorSchedule = async (id: number) => {
+  await api.delete(`/v1/doctor-schedule/${id}`, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
+};
+
+export const deleteMessageById = async (id: number) => {
+  await api.delete(`/v1/message/${id}`, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
 };
