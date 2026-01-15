@@ -18,7 +18,6 @@ class DoctorSpecialitiesResource extends JsonResource
             'id' => $this->id,
             'doctor_profile_id' => $this->doctor_profile_id,
             'speciality_id' => $this->speciality_id,
-            'primary_speciality' => $this->primary_speciality,
             'doctor' => $this->whenLoaded('doctor'),
             'speciality' => $this->whenLoaded('speciality'),
             'created_at' => $this->created_at,

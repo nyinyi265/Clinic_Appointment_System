@@ -9,7 +9,6 @@ class DoctorSpecialities extends Model
     protected $fillable = [
         'doctor_profile_id',
         'speciality_id',
-        'primary_speciality',
     ];
 
     public function doctor()

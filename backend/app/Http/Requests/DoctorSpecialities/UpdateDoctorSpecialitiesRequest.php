@@ -24,7 +24,6 @@ class UpdateDoctorSpecialitiesRequest extends FormRequest
         return [
             'doctor_profile_id' => 'exists:doctor_profiles,id',
             'speciality_id' => 'exists:specialities,id',
-            'primary_speciality' => 'string|max:255',
         ];
     }
 }

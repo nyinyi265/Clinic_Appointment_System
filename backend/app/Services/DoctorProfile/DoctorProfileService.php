@@ -48,7 +48,6 @@ class DoctorProfileService
                 DoctorSpecialities::create([
                     'doctor_profile_id' => $doctorProfile->id,
                     'speciality_id' => $specialityId,
-                    'primary_speciality' => 'General', // Default value
                 ]);
             }
         }
@@ -127,7 +126,6 @@ class DoctorProfileService
                     DoctorSpecialities::create([
                         'doctor_profile_id' => $profile->id,
                         'speciality_id' => $specialityId,
-                        'primary_speciality' => 'General',
                     ]);
                 }
             }

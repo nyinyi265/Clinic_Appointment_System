@@ -24,7 +24,6 @@ class StoreDoctorSpecialitiesRequest extends FormRequest
         return [
             'doctor_profile_id' => 'required|exists:doctor_profiles,id',
             'speciality_id' => 'required|exists:specialities,id',
-            'primary_speciality' => 'required|string|max:255',
         ];
     }
 }
