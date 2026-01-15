@@ -45,7 +45,6 @@ Route::prefix('v1')->group(function () {
     });
 
     Route::middleware(['auth:sanctum', 'role:doctor|admin,sanctum'])->group(function () {
-        Route::post('/doctor-clinic', [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'createDoctorClinic']);
         Route::put('/doctor/{doctor_id}', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'updateDoctor']);
 
         Route::get('/all-doctor-schedules', [\App\Http\Controllers\DoctorSchedule\DoctorScheduleController::class, 'getAllDoctorSchedules']);
@@ -103,9 +102,9 @@ Route::prefix('v1')->group(function () {
         Route::put('/clinic/{clinic_id}', [\App\Http\Controllers\Clinic\ClinicController::class, 'updateClinic']);
         Route::delete('/clinic/{clinic_id}', [\App\Http\Controllers\Clinic\ClinicController::class, 'deleteClinic']);
 
+        Route::post('/doctor-clinic', [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'createDoctorClinic']);
         Route::post('/doctor', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'registerDoctor']);
         Route::delete('/doctor/{doctor_id}', [\App\Http\Controllers\DoctorProfile\DoctorProfileController::class, 'deleteDoctor']);
-
         Route::delete('/doctor-clinic/{id}', [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'deleteDoctorClinic']);
 
         Route::get('/speciality/{id}', [\App\Http\Controllers\Speciality\SpecialityController::class, 'getSpecialityById']);
@@ -130,6 +129,9 @@ Route::prefix('v1')->group(function () {
         Route::get('/appointments/status/{status}', [\App\Http\Controllers\Appointment\AppointmentController::class, 'getAppointmentsByStatus']);
 
         Route::get('/messages', [\App\Http\Controllers\Message\MessageController::class, 'index']);
-        Route::delete('/message/{id}', [\App\Http\COntrollers\Message\MessageController::class, 'delete']);
+        Route::delete('/message/{id}', [\App\Http\Controllers\Message\MessageController::class, 'delete']);
+
+        Route::post('/assign-doctor', [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'assignDoctor']);
+        Route::get('/doctor-clinic-assignments', [\App\Http\Controllers\DoctorClinic\DoctorClinicController::class, 'getAssignments']);
     });
 });

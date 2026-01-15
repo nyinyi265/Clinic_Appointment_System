@@ -3,6 +3,7 @@
 namespace App\Services\DoctorClinic;
 
 use App\Models\DoctorClinic;
+use App\Models\User;
 
 class DoctorClinicService
 {
@@ -54,5 +55,33 @@ class DoctorClinicService
     public function getPendingClinicRequests()
     {
         return DoctorClinic::with(['doctor.user', 'clinic'])->where('is_active', false)->get();
+    }
+
+    public function assignDoctor($userId, $clinicId)
+    {
+        $doctor = User::role('doctor')->where('id', $userId)->with('doctor_profile')->first();
+        if (!$doctor || !$doctor->doctor_profile) {
+            throw new \Exception('Doctor not found or profile missing');
+        }
+
+        $profileId = $doctor->doctor_profile->id;
+
+        // Check if already assigned
+        $existing = DoctorClinic::where('doctor_profile_id', $profileId)->where('clinic_id', $clinicId)->first();
+        if ($existing) {
+            throw new \Exception('Doctor is already assigned to this clinic');
+        }
+
+        return DoctorClinic::create([
+            'doctor_profile_id' => $profileId,
+            'clinic_id' => $clinicId,
+            'role' => 'Doctor',
+            'is_active' => true,
+        ]);
+    }
+
+    public function getAssignments()
+    {
+        return DoctorClinic::with(['doctor.user', 'clinic'])->where('is_active', true)->get();
     }
 }

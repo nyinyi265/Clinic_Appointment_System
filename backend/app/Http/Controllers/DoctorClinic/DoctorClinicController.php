@@ -8,6 +8,7 @@ use App\Http\Requests\DoctorClinic\UpdateDoctorClinicRequest;
 use App\Http\Resources\DoctorClinic\DoctorClinicResource;
 use App\Services\DoctorClinic\DoctorClinicService;
 use App\Trait\HttpResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -151,6 +152,37 @@ class DoctorClinicController extends Controller
             ], 'Pending requests retrieved successfully', 200);
         } catch (\Exception $e) {
             return $this->fail('fail', null, 'Internal server error', 500);
+        }
+    }
+
+    public function assignDoctor(Request $request)
+    {
+        $validated = $request->validate([
+            'doctor_id' => 'required|exists:users,id',
+            'clinic_id' => 'required|exists:clinics,id',
+        ]);
+
+        try {
+            $assignment = $this->doctorClinicService->assignDoctor($validated['doctor_id'], $validated['clinic_id']);
+
+            return $this->success('success', [
+                'data' => DoctorClinicResource::make($assignment),
+            ], 'Doctor assigned to clinic successfully', 201);
+        } catch (\Exception $e) {
+            return $this->fail('fail', null, $e->getMessage(), 500);
+        }
+    }
+
+    public function getAssignments()
+    {
+        try {
+            $assignments = $this->doctorClinicService->getAssignments();
+
+            return $this->success('success', [
+                'data' => $assignments,
+            ], 'Assignments retrieved successfully', 200);
+        } catch (\Exception $e) {
+            return $this->fail('fail', null, $e->getMessage(), 500);
         }
     }
 }
