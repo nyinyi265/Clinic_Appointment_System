@@ -19,4 +19,9 @@ class MessageService
         $messages = Message::orderBy('created_at', 'desc')->get();
         return MessageResource::collection($messages);
     }
+
+    public function delete($id){
+        $message = Message::where('id', $id)->first();
+        $message->delete();
+    }
 }

@@ -30,4 +30,9 @@ class MessageController extends Controller
         $messages = $this->messageService->index();
         return $this->success('success', $messages, 'Messages retrieved successfully', 200);
     }
+
+    public function delete($id){
+        $this->messageService->delete($id);
+        return $this->success('success', null, 'Message deleted successfully', 200);
+    }
 }

@@ -8,6 +8,7 @@ use App\Http\Requests\DoctorClinic\UpdateDoctorClinicRequest;
 use App\Http\Resources\DoctorClinic\DoctorClinicResource;
 use App\Services\DoctorClinic\DoctorClinicService;
 use App\Trait\HttpResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class DoctorClinicController extends Controller

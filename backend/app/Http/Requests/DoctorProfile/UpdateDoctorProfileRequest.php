@@ -22,13 +22,13 @@ class UpdateDoctorProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'first_name' => 'string|max:255',
-            'last_name' => 'string|max:255',
-            'phone_number' => 'string|max:15',
-            'email' => 'email|unique:users,email,' . $this->route('id') . '|string',
+            'first_name' => 'nullable|string|max:255',
+            'last_name' => 'nullable|string|max:255',
+            'phone_number' => 'nullable|string|max:15',
+            'email' => 'nullable|email',
             'password' => 'nullable|string|min:8',
-            'license_number' => 'string',
-            'is_active' => 'boolean',
+            'license_number' => 'nullable|string',
+            'is_active' => 'nullable',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'specialities' => 'nullable|array',
             'specialities.*' => 'exists:specialities,id',

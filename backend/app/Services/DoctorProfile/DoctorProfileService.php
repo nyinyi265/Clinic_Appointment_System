@@ -20,9 +20,10 @@ class DoctorProfileService
 
     public function getDoctorById($id)
     {
-        $doctor = User::role('doctor')->whereHas('doctor_profile', function ($q) use ($id) {
-            $q->where('id', $id);
-        })->with('doctor_profile')->first();
+        $doctor = User::role('doctor')
+            ->where('id', $id)
+            ->with(['doctor_profile.specialities', 'doctor_profile.clinics'])
+            ->first();
         return $doctor;
     }
 
@@ -76,6 +77,7 @@ class DoctorProfileService
 
     public function updateDoctor($id, $data)
     {
+        // Find the user by ID
         $doctor = User::role('doctor')->where('id', $id)->first();
 
         if (!$doctor) {
@@ -83,6 +85,7 @@ class DoctorProfileService
         }
 
         DB::transaction(function () use ($doctor, $data) {
+            // 1. Update User Data
             $updateUserData = array_filter([
                 'first_name' => $data['first_name'] ?? null,
                 'last_name' => $data['last_name'] ?? null,
@@ -98,37 +101,36 @@ class DoctorProfileService
                 $doctor->update($updateUserData);
             }
 
+            // 2. Fix: Get profile OR create it if it's missing
+            $profile = $doctor->doctor_profile;
+
             $profileData = array_filter([
                 'license_number' => $data['license_number'] ?? null,
                 'is_active' => $data['is_active'] ?? null,
                 'profile_picture' => $data['profile_picture'] ?? null,
             ], fn($value) => !is_null($value));
 
-            if (!empty($profileData)) {
-                $profile = $doctor->doctor_profile;
-                if ($profile) {
-                    $profile->fill($profileData)->save();
-                }
+            if ($profile) {
+                $profile->update($profileData);
+            } else {
+                // Create profile if this user doesn't have one yet
+                $doctor->doctor_profile()->create($profileData);
+                $profile = $doctor->fresh()->doctor_profile;
             }
 
-            // Update specialities if provided
+            // 3. Update Specialities
             if (isset($data['specialities']) && is_array($data['specialities'])) {
-                $profile = $doctor->doctor_profile;
-                if ($profile) {
-                    // Remove existing specialities
-                    $profile->specialities()->detach();
+                // Use the relationship if defined, otherwise manual delete
+                $profile->specialities()->detach();
 
-                    // Add new specialities
-                    foreach ($data['specialities'] as $specialityId) {
-                        DoctorSpecialities::create([
-                            'doctor_profile_id' => $profile->id,
-                            'speciality_id' => $specialityId,
-                            'primary_speciality' => 'General', // Default value
-                        ]);
-                    }
+                foreach ($data['specialities'] as $specialityId) {
+                    DoctorSpecialities::create([
+                        'doctor_profile_id' => $profile->id,
+                        'speciality_id' => $specialityId,
+                        'primary_speciality' => 'General',
+                    ]);
                 }
             }
-
         });
 
         return $doctor->load('doctor_profile.specialities');

@@ -40,4 +40,10 @@ class DoctorProfile extends Model
     {
         return $this->hasMany(Appointment::class);
     }
+
+    public function schedules()
+    {
+        return $this->hasMany(DoctorSchedule::class, 'doctor_profile_id');
+    }
+
 }

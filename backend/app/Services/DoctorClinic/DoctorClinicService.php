@@ -43,7 +43,7 @@ class DoctorClinicService
 
     public function getClinicsByDoctor($doctorId)
     {
-        return DoctorClinic::with('clinic')->where('doctor_profile_id', $doctorId)->get();
+        return DoctorClinic::with('clinic')->where('doctor_profile_id', $doctorId)->whereHas('clinic')->get();
     }
 
     public function getDoctorsByClinic($clinicId)
