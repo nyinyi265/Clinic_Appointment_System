@@ -16,5 +16,5 @@ export const navLinks: NavItem[] = [
   { label: 'Patients', href: '/doctor/patients', roles: ['doctor'] },
   { label: 'Clinics', href: '/doctor/clinics', roles: ['doctor'] },
   { label: 'Schedules', href: '/doctor/schedules', roles: ['doctor'] },
-  { label: 'Assign Doctors', href: '/assign-doctors', roles: ['doctor'] },
+  // { label: 'Assign Doctors', href: '/assign-doctors', roles: ['doctor'] },
 ];
